@@ -531,4 +531,11 @@ insert into PatientsVisitPolyclinicCabinets (cabinetId, patientId, doctorId, dat
 insert into PatientsVisitPolyclinicCabinets (cabinetId, patientId, doctorId, dateOfVisit) values (3, 22, 13, '10-Mar-2022');
 insert into PatientsVisitPolyclinicCabinets (cabinetId, patientId, doctorId, dateOfVisit) values (2, 23, 14, '14-Mar-2022');
 
-	
+insert into PatientTreatedInPolyclinic(patientId, doctorId, polyclinicId, admissionDate, dateOfRecovery, currentDisease, currentOperation, currentMeds) values (2,2,1,'22-Nov-2020',NULL,'Мигрень',NULL,'Болеутоляющие');
+insert into PatientTreatedInPolyclinic(patientId, doctorId, polyclinicId, admissionDate, dateOfRecovery, currentDisease, currentOperation, currentMeds) values (3,4,1,'22-Nov-2020',NULL,'Перелом',NULL,'Болеутоляющие');
+insert into PatientTreatedInPolyclinic(patientId, doctorId, polyclinicId, admissionDate, dateOfRecovery, currentDisease, currentOperation, currentMeds) values (5,13,1,'22-Nov-2020',NULL,'ОРВИ',NULL,'Парацетамол');
+insert into PatientTreatedInPolyclinic(patientId, doctorId, polyclinicId, admissionDate, dateOfRecovery, currentDisease, currentOperation, currentMeds) values (6,14,1,'22-Nov-2020',NULL,'ОРВИ',NULL,'Парацетамол, витамины');
+insert into PatientTreatedInPolyclinic(patientId, doctorId, polyclinicId, admissionDate, dateOfRecovery, currentDisease, currentOperation, currentMeds) values (7,7,1,'22-Nov-2020',NULL,'Кариес','Чистка кариеса','Жидкости для полоскания');
+insert into PatientTreatedInPolyclinic(patientId, doctorId, polyclinicId, admissionDate, dateOfRecovery, currentDisease, currentOperation, currentMeds) values (8,12,1,'22-Nov-2020',NULL,'Жалобы на падение зрения',NULL,'Сосудорасширяющие препараты');
+
+
