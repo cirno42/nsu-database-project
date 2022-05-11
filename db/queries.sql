@@ -106,20 +106,23 @@ Select Doctors.id, Doctors.name from DoneOperationsForHospitals
 INNER JOIN (Select Hospitals.id as id from Hospitals where (name = 'Городская больница №2')) as t_hospitals on (DoneOperationsForHospitals.hospitalId = t_hospitals.id) 
 inner join Doctors on (DoneOperationsForHospitals.doctorId = Doctors.id)
 group by Doctors.id
-Having count(*) > 3;
+Having count(*) >= 3;
 
 
 --4
 
+Select Doctors.id, Doctors.name, sum(dismissaldate - employmentdate) as workDays 
+from
+Doctors inner join DoctorWorkedAtHospital on (Doctors.id = DoctorWorkedAtHospital.doctorId)
+inner join Hospitals on (Hospitals.id = DoctorWorkedAtHospital.hospitalId)
+where Hospitals.name = 'Городская больница №1'
+group by Doctors.id;
 
-Select Doctors.name, (DoctorWorkedAtHospital.dismissalDate - DoctorWorkedAtHospital.employmentDate) as dateDiff from
-Doctors inner join DoctorWorkedAtHospital on (Doctors.id = DoctorWorkedAtHospital.doctorId) inner join Hospitals on (DoctorWorkedAtHospital.hospitalId = Hospitals.id)
-Where (Hospitals.name = 'Городская больница №2') and ((DoctorWorkedAtHospital.dismissalDate - DoctorWorkedAtHospital.employmentDate) > 365);
 
 
 --5
 
-Select Doctors.name from
+Select Doctors.id, Doctors.name from
 Doctors 
 inner join Docents on (Doctors.id = Docents.id) 
 inner join DoctorWorksAtHospital on (DoctorWorksAtHospital.doctorId = Doctors.id) 
@@ -133,26 +136,97 @@ Where (Hospitals.name = 'Городская больница №2');
 Select Patients.name as patientName, Doctors.name as doctorName, PatientTreatsInHospital.admissionDate ,PatientTreatsInHospital.admissionTemperature 
 from
 PatientTreatsInHospital inner join HospitalWards on (HospitalWards.id = PatientTreatsInHospital.wardId) 
-inner join HospitalDepartments on (HospitalDepartments.id = HospitalWards.departmentId) 
+inner join HospitalDepartments on (HospitalDepartments.id = HospitalWards.departmentId)
+inner join Hospitals on (HospitalDepartments.hospitalId = Hospitals.id) 
 inner join Patients on (Patients.id = PatientTreatsInHospital.patientId)
 inner join Doctors on (PatientTreatsInHospital.doctorId = Doctors.id)
-Where (dateOfRecovery IS NULL) and (HospitalWards.wardNumber = '1') and (HospitalDepartments.name = 'Инфекционное отделение');
+Where (HospitalWards.wardNumber = '1') and (HospitalDepartments.name = 'Инфекционное отделение') and (Hospitals.name = 'Городская больница №1');
 
 --Добавить название больницы в where
 
 --7
 
 
-Select Patients.name, PatientTreatsInHospital.admissionDate, PatientTreatsInHospital.dateOfRecovery
+Select Patients.id, Patients.name, PatientTreatedInHospital.admissionDate, PatientTreatedInHospital.dateOfRecovery
 from 
-Patients inner join PatientTreatsInHospital on (Patients.id = PatientTreatsInHospital.patientId)
-inner join HospitalWards on (PatientTreatsInHospital.wardId = HospitalWards.id)
+Patients inner join PatientTreatedInHospital on (Patients.id = PatientTreatedInHospital.patientId)
+inner join HospitalWards on (PatientTreatedInHospital.wardId = HospitalWards.id)
 inner join HospitalDepartments on (HospitalWards.departmentId = HospitalDepartments.id)
 inner join Hospitals on (HospitalDepartments.hospitalId = Hospitals.id)
-where (Hospitals.name = 'Городская больница №1') and (PatientTreatsInHospital.admissionDate >= '15-Dec-2020') and (PatientTreatsInHospital.dateOfRecovery <= '28-Jan-2020');
+where (Hospitals.name = 'Городская больница №1') and (PatientTreatedInHospital.admissionDate >= '15-Dec-2020') and (PatientTreatedInHospital.dateOfRecovery <= '28-Jan-2020');
+
+--Перед показом добавить пациентов в таблицу PatientTreatedInHospital
 
 --8
 
+Select Patients.id, Patients.name as patientName, Doctors.name as doctorName, currentDisease 
+from Patients inner join PatientTreatsInPolyclinic on (Patients.id = PatientTreatsInPolyclinic.patientId)
+inner join Doctors on (Doctors.id = PatientTreatsInPolyclinic.doctorId)
+inner join Dentists on (Doctors.id = Dentists.id);
+
 --9
 
-Select Hospitals.name, count(*)
+Select HospitalWards.id, HospitalWards.wardNumber, HospitalWards.totalPlaces, count(PatientTreatsInHospital.wardId) as busyPlaces, totalPlaces - count(PatientTreatsInHospital.wardId) as freePlaces
+from HospitalWards left join PatientTreatsInHospital on (HospitalWards.id = PatientTreatsInHospital.wardId)
+group by HospitalWards.id;
+
+
+-- ^ получение списка палат и их состояния
+
+Select * from (
+Select HospitalWards.id, HospitalWards.wardNumber, HospitalWards.totalPlaces, count(PatientTreatsInHospital.wardId) as busyPlaces, totalPlaces - count(PatientTreatsInHospital.wardId) as freePlaces
+from HospitalWards left join PatientTreatsInHospital on (HospitalWards.id = PatientTreatsInHospital.wardId)
+group by HospitalWards.id) as wards where wards.freePlaces = wards.totalPlaces;
+
+-- полностью свободные палаты
+
+
+select HospitalDepartments.id, HospitalDepartments.name, sum(totalPlaces), sum(freePlaces) from
+(Select HospitalWards.id, HospitalWards.departmentId, HospitalWards.wardNumber, 
+	HospitalWards.totalPlaces, count(PatientTreatsInHospital.wardId) as busyPlaces, totalPlaces - count(PatientTreatsInHospital.wardId) as freePlaces
+from HospitalWards left join PatientTreatsInHospital on (HospitalWards.id = PatientTreatsInHospital.wardId)
+group by HospitalWards.id) as wards
+inner join HospitalDepartments on (wards.departmentId = HospitalDepartments.id)
+group by HospitalDepartments.id;
+
+
+--10
+
+Select Polyclinics.id, Polyclinics.name, count(*)
+from Polyclinics inner join PolyclinicCabinets on (Polyclinics.id = PolyclinicCabinets.polyclinicId)
+group by Polyclinics.id;
+
+
+Select Polyclinics.id, Polyclinics.name, PolyclinicCabinets.id, PolyclinicCabinets.cabinetName, count(*)
+from Polyclinics inner join PolyclinicCabinets on (Polyclinics.id = PolyclinicCabinets.polyclinicId)
+left join PatientsVisitPolyclinicCabinets on (PolyclinicCabinets.id = patientsvisitpolycliniccabinets.cabinetid)
+where dateOfVisit >= '2022-03-14' and dateOfVisit <= '2022-03-27'
+group by PolyclinicCabinets.id, Polyclinics.id;
+
+--11
+
+Select Doctors.id, Doctors.name, count(*)*1.0 / ( CAST(('27-Mar-2022') as DATE) - CAST(('14-Mar-2022') as DATE) ) as avaregeVisits
+from Doctors inner join PatientsVisitPolyclinicCabinets on (Doctors.id = PatientsVisitPolyclinicCabinets.doctorId)
+where dateOfVisit >= '14-Mar-2022' and dateOfVisit <= '27-Mar-2022'
+group by Doctors.id;
+
+--12
+
+Select Doctors.id, Doctors.name, count(PatientTreatsInHospital.patientId)
+from Doctors left join PatientTreatsInHospital on (Doctors.id = PatientTreatsInHospital.doctorId)
+group by Doctors.id;
+
+--13
+
+Select Patients.id, Patients.name, DoneOperationsForHospitals.operationName
+from Patients inner join DoneOperationsForHospitals on (Patients.id = DoneOperationsForHospitals.patientId);
+
+--14
+
+select Laboratories.id, Laboratories.name, count(*)*1.0 / ( CAST(('2020-01-23') as DATE) - CAST(('2020-01-21') as DATE) + 1) as avaregeServices  
+from BiologicalLaboratoryServicesHospital inner join Laboratories on (BiologicalLaboratoryServicesHospital.laboratoryId = Laboratories.id)
+inner join Hospitals on (BiologicalLaboratoryServicesHospital.hospitalId = Hospitals.id)
+where Hospitals.name = 'Городская больница №1' and BiologicalLaboratoryServicesHospital.serviceDate >= '2020-01-21' 
+and  BiologicalLaboratoryServicesHospital.serviceDate <= '2020-01-23'
+group by Laboratories.id;
+
