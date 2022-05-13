@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 public class HospitalDepartmentEntity {
     Integer id;
-    Integer diseaseGroupId;
+    Integer diseaseGroupSpecializationId;
     String name;
     Integer hospitalId;
 }

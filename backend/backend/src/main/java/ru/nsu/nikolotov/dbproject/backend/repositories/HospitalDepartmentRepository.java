@@ -19,7 +19,7 @@ public class HospitalDepartmentRepository {
     public HospitalDepartmentEntity createHospitalDepartment(HospitalDepartmentEntity department) {
         var id = repositoryUtils.getNextval("hospitaldepartment_id_seq");
         String statementString = "Insert into hospitaldepartments(id, diseasegroupspecializationid, name, hospitalid) values (?, ?, ?, ?)";
-        int affectedRows = jdbcTemplate.update(statementString, id, department.getDiseaseGroupId(),
+        int affectedRows = jdbcTemplate.update(statementString, id, department.getDiseaseGroupSpecializationId(),
                 department.getName(), department.getHospitalId());
         if (affectedRows == 0) {
             return null;
@@ -32,14 +32,14 @@ public class HospitalDepartmentRepository {
 
     public HospitalDepartmentEntity getNextHospitalDep(int id) {
         var nextId = repositoryUtils.getNextId("hospitaldepartments", id);
-        return getHospitalDepById(id);
+        return getHospitalDepById(nextId);
     }
 
     public int updateHospitalDepartment(HospitalDepartmentEntity departmentEntity) {
         String statementString = "Update hospitaldepartments set name = ?, diseasegroupspecializationid = ?, hospitalid = ? " +
                 "where id=?";
         return jdbcTemplate.update(statementString, departmentEntity.getName(),
-                departmentEntity.getDiseaseGroupId(), departmentEntity.getHospitalId(), departmentEntity.getId());
+                departmentEntity.getDiseaseGroupSpecializationId(), departmentEntity.getHospitalId(), departmentEntity.getId());
     }
 
     public void deleteHospitalDepById(int id) {

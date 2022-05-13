@@ -30,7 +30,7 @@ public class HospitalRepository {
 
     public HospitalEntity getNextHospital(int id) {
         var nextId = repositoryUtils.getNextId("Hospitals", id);
-        return getHospitalById(id);
+        return getHospitalById(nextId);
     }
 
     public int updateHospital(HospitalEntity hospitalEntity) {
