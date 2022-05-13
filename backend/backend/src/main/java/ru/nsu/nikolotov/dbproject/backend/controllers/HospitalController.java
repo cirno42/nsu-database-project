@@ -40,4 +40,14 @@ public class HospitalController {
         }
         return ResponseEntity.ok(createdHospital);
     }
+
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void updateHospital(@RequestBody HospitalEntity hospitalEntity) {
+        hospitalService.updateHospital(hospitalEntity);
+    }
+
+    @DeleteMapping
+    public void deleteHospital(@RequestParam int id) {
+        hospitalService.deleteHospital(id);
+    }
 }

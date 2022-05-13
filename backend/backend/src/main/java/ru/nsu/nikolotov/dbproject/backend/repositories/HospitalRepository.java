@@ -17,12 +17,12 @@ public class HospitalRepository {
 
     public HospitalEntity createNewHospital(String name) {
         var id = repositoryUtils.getNextval("hospital_id_seq");
-        String statementString = "Insert into Patients(id, name) values (?, ?)";
+        String statementString = "Insert into hospitals(id, name) values (?, ?)";
         int affectedRows = jdbcTemplate.update(statementString, id, name);
         if (affectedRows == 0) {
             return null;
         }
-        String statementToSelectNewPatient = "Select * from patients where id = " + id;
+        String statementToSelectNewPatient = "Select * from hospitals where id = " + id;
         var createdHospital = jdbcTemplate.query(statementToSelectNewPatient,
                 BeanPropertyRowMapper.newInstance(HospitalEntity.class));
         return createdHospital.get(0);
