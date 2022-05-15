@@ -10,7 +10,7 @@ import ru.nsu.nikolotov.dbproject.backend.entities.HospitalWardEntity;
 import ru.nsu.nikolotov.dbproject.backend.services.HospitalWardService;
 
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping("api/v1/hospitalwards")
 public class HospitalWardsController {
     @Autowired
     HospitalWardService service;

@@ -10,7 +10,7 @@ import ru.nsu.nikolotov.dbproject.backend.entities.PolyclinicEntity;
 import ru.nsu.nikolotov.dbproject.backend.services.PolyclinicService;
 
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping("api/v1/polyclinics")
 public class PolyclinicController {
     @Autowired
     PolyclinicService service;
