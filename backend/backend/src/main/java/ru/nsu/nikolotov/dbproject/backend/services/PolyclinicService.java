@@ -2,7 +2,7 @@ package ru.nsu.nikolotov.dbproject.backend.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.nsu.nikolotov.dbproject.backend.entities.HospitalWardEntity;
+import ru.nsu.nikolotov.dbproject.backend.entities.DoctorStatisticEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.PolyclinicEntity;
 import ru.nsu.nikolotov.dbproject.backend.repositories.PolyclinicRepository;
 
@@ -29,5 +29,9 @@ public class PolyclinicService {
 
     public void update(PolyclinicEntity entity) {
         repository.update(entity);
+    }
+
+    public DoctorStatisticEntity getPolyclinicCabinetsCount(Integer polyclinicId) {
+        return repository.getPolyclinicCabinetsCount(polyclinicId);
     }
 }

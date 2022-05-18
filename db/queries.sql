@@ -1,6 +1,7 @@
 --1
 
-Select Doctors.id as doctorId, Doctors.name as doctorName, Hospitals.id as hospitalId, Hospitals.name as hospitalName, DoctorWorksAtHospital.salary, DoctorWorksAtHospital.contractStartDate, DoctorWorksAtHospital.contractEndDate, Doctors.vacationStart, 
+Select Doctors.id as doctorId, Doctors.name as doctorName, Hospitals.id as hospitalId, Hospitals.name as hospitalName, 
+DoctorWorksAtHospital.salary, DoctorWorksAtHospital.contractStartDate, DoctorWorksAtHospital.contractEndDate, Doctors.vacationStart, 
 Doctors.vacationEnd, Doctors.salaryCoefficient
 from (Dentists INNER JOIN DoctorWorksAtHospital on (Dentists.id = DoctorWorksAtHospital.doctorId) 
 INNER JOIN Doctors on (Dentists.id = Doctors.id)) 
@@ -43,7 +44,7 @@ GROUP BY Hospitals.id ;
 
 --2
 
-Select Hospitals.id as hospitalId, Hospitals.name as hospitalName, ServiceStaff.name as workerName, positions.positionName as position, positions.salaryCoefficient as salaryCoefficient, 
+Select Hospitals.id as institutionId, Hospitals.name as institutionName, ServiceStaff.name as workerName, positions.positionName as position, positions.salaryCoefficient as salaryCoefficient, 
 ServiceStaffWorksAtHospital.salary, ServiceStaffWorksAtHospital.employmentDate, ServiceStaffWorksAtHospital.dismissalDate 
 from 
 (Select ServiceStaffPositions.id as positionId, ServiceStaffPositions.salaryCoefficient, ServiceStaffPositions.positionName from ServiceStaffPositions
@@ -63,7 +64,7 @@ GROUP BY Hospitals.id;
 
 
 
-Select Polyclinics.id as polyclinicId, Polyclinics.name as polyclinicName, ServiceStaff.name as workerName, positions.positionName as position, positions.salaryCoefficient as salaryCoefficient, 
+Select Polyclinics.id as institutionId, Polyclinics.name as institutionName, ServiceStaff.name as workerName, positions.positionName as position, positions.salaryCoefficient as salaryCoefficient, 
 ServiceStaffWorksAtPolyclinic.salary, ServiceStaffWorksAtPolyclinic.employmentDate, ServiceStaffWorksAtPolyclinic.dismissalDate 
 from 
 (Select ServiceStaffPositions.id as positionId, ServiceStaffPositions.salaryCoefficient, ServiceStaffPositions.positionName from ServiceStaffPositions
@@ -133,7 +134,7 @@ Where (Hospitals.name = 'Городская больница №2');
 
 --for ward
 
-Select Patients.name as patientName, Doctors.name as doctorName, PatientTreatsInHospital.admissionDate ,PatientTreatsInHospital.admissionTemperature 
+Select Patients.id as patientId, Patients.name as patientName, Doctors.id as doctorid, Doctors.name as doctorName, PatientTreatsInHospital.admissionDate ,PatientTreatsInHospital.admissionTemperature 
 from
 PatientTreatsInHospital inner join HospitalWards on (HospitalWards.id = PatientTreatsInHospital.wardId) 
 inner join HospitalDepartments on (HospitalDepartments.id = HospitalWards.departmentId)
@@ -150,10 +151,7 @@ Where (HospitalWards.wardNumber = '1') and (HospitalDepartments.name = 'Инфе
 Select Patients.id, Patients.name, PatientTreatedInHospital.admissionDate, PatientTreatedInHospital.dateOfRecovery
 from 
 Patients inner join PatientTreatedInHospital on (Patients.id = PatientTreatedInHospital.patientId)
-inner join HospitalWards on (PatientTreatedInHospital.wardId = HospitalWards.id)
-inner join HospitalDepartments on (HospitalWards.departmentId = HospitalDepartments.id)
-inner join Hospitals on (HospitalDepartments.hospitalId = Hospitals.id)
-where (Hospitals.name = 'Городская больница №1') and (PatientTreatedInHospital.admissionDate >= '15-Dec-2020') and (PatientTreatedInHospital.dateOfRecovery <= '28-Jan-2020');
+where (Hospitals.id = 1) and (PatientTreatedInHospital.admissionDate >= '15-Dec-2020') and (PatientTreatedInHospital.dateOfRecovery <= '28-Jan-2020');
 
 --Перед показом добавить пациентов в таблицу PatientTreatedInHospital
 

@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.nsu.nikolotov.dbproject.backend.entities.HospitalWardEntity;
+import ru.nsu.nikolotov.dbproject.backend.entities.DoctorStatisticEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.PolyclinicEntity;
 
 @Repository
@@ -49,5 +49,17 @@ public class PolyclinicRepository {
 
     public PolyclinicEntity getById(int id) {
         return repositoryUtils.getEntityId("polyclinics", id, PolyclinicEntity.class);
+    }
+
+    public DoctorStatisticEntity getPolyclinicCabinetsCount(Integer polyclinicId) {
+        String statementString ="Select Polyclinics.id, Polyclinics.name, count(*) as count\n" +
+                "from Polyclinics inner join PolyclinicCabinets on (Polyclinics.id = PolyclinicCabinets.polyclinicId)\n" +
+                "where polyclinicid = ?\n" +
+                "group by Polyclinics.id;";
+        var resList = jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(DoctorStatisticEntity.class), polyclinicId);
+        if (resList.size() == 0) {
+            return null;
+        }
+        return resList.get(0);
     }
 }

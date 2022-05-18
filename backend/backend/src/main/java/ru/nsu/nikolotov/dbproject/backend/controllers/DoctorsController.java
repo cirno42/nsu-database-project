@@ -6,9 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.nikolotov.dbproject.backend.dtos.DoctorDTO;
-import ru.nsu.nikolotov.dbproject.backend.entities.DoctorEntity;
-import ru.nsu.nikolotov.dbproject.backend.entities.DoctorExperienceEntity;
-import ru.nsu.nikolotov.dbproject.backend.entities.DoctorWorksAtInstitutionEntity;
+import ru.nsu.nikolotov.dbproject.backend.entities.*;
 import ru.nsu.nikolotov.dbproject.backend.services.DoctorService;
 import ru.nsu.nikolotov.dbproject.backend.types.DoctorSciencePosition;
 import ru.nsu.nikolotov.dbproject.backend.types.DoctorScienceRank;
@@ -16,6 +14,7 @@ import ru.nsu.nikolotov.dbproject.backend.types.DoctorType;
 import ru.nsu.nikolotov.dbproject.backend.types.MedicineInstitutionType;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -106,6 +105,25 @@ public class DoctorsController {
             dtoList.add(DoctorDTO.EntityToDTO(el));
         });
         return dtoList;
+    }
+
+    @GetMapping("doctorstatistic/polyclinics")
+    public List<DoctorPolyclinicWorkStatistic> getPolyclinicStats(@RequestParam(required = false) Integer doctorId,
+                                                                  @RequestParam(required = false) Integer polyclinicId,
+                                                                  @RequestParam(required = false) String doctorType,
+                                                                  @RequestParam Date beginDate,
+                                                                  @RequestParam Date endDate) {
+        return service.getPolyclinicStats(doctorId, beginDate, endDate, polyclinicId, DoctorType.fromString(doctorType));
+    }
+
+    @GetMapping("doctorstatistic/hospitals")
+    public List<DoctorStatisticEntity> getHospitalStats(@RequestParam(required = false) Integer doctorId,
+                                                        @RequestParam(required = false) Integer hospitalId,
+                                                        @RequestParam(required = false) String doctorType) {
+        if ((doctorId == null) && (hospitalId == null) && (doctorType == null)) {
+            return null;
+        }
+        return service.getHospitalStats(doctorId, hospitalId, DoctorType.fromString(doctorType));
     }
 
 }

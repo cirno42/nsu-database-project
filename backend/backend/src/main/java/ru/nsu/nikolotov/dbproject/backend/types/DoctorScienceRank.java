@@ -26,4 +26,16 @@ public enum DoctorScienceRank {
         }
         return NONE;
     }
+
+
+    public static String doctorRankToTableName(DoctorScienceRank rank) {
+        switch (rank) {
+            case CANDIDATE_OF_SCIENCE:
+                return "candidatsofscience";
+            case DOCTOR_OF_SCIENCE:
+                return "doctorsofscience";
+        }
+        return null;
+    }
+
 }

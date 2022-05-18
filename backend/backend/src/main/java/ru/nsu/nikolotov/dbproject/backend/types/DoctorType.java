@@ -36,5 +36,33 @@ public enum DoctorType {
         }
         return NONE;
     }
+
+    public static String doctorTypeToTableName(DoctorType type) {
+        String tableName = null;
+        switch (type) {
+            case DENTIST:
+                tableName = "dentists";
+                break;
+            case SURGEON:
+                tableName = "surgeons";
+                break;
+            case THERAPIST:
+                tableName = "therapists";
+                break;
+            case RADIOLOGIST:
+                tableName = "radiologists";
+                break;
+            case OPHTHALMOLOGIST:
+                tableName = "ophthalmologists";
+                break;
+            case NEUROPATHOLOGIST:
+                tableName = "neuropathologists";
+                break;
+        }
+        return tableName;
+    }
+
+
+
 }
 

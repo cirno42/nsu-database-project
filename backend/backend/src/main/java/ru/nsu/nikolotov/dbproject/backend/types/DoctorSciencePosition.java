@@ -26,4 +26,16 @@ public enum DoctorSciencePosition {
         return NONE;
     }
 
+    public static String doctorPositionToTableName(DoctorSciencePosition position) {
+        switch (position) {
+            case PROFESSOR:
+                return "professors";
+            case DOCENT:
+                return "docents";
+        }
+        return null;
+    }
+
+
+
 }

@@ -5,16 +5,17 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.nsu.nikolotov.dbproject.backend.entities.DoctorEntity;
-import ru.nsu.nikolotov.dbproject.backend.entities.DoctorExperienceEntity;
-import ru.nsu.nikolotov.dbproject.backend.entities.DoctorWorksAtInstitutionEntity;
-import ru.nsu.nikolotov.dbproject.backend.entities.PolyclinicEntity;
+import ru.nsu.nikolotov.dbproject.backend.entities.*;
 import ru.nsu.nikolotov.dbproject.backend.types.DoctorSciencePosition;
 import ru.nsu.nikolotov.dbproject.backend.types.DoctorScienceRank;
 import ru.nsu.nikolotov.dbproject.backend.types.DoctorType;
 import ru.nsu.nikolotov.dbproject.backend.types.MedicineInstitutionType;
 
+import java.util.Date;
 import java.util.List;
+
+import static ru.nsu.nikolotov.dbproject.backend.types.DoctorType.NONE;
+import static ru.nsu.nikolotov.dbproject.backend.types.DoctorType.doctorTypeToTableName;
 
 @Repository
 @Transactional
@@ -90,7 +91,7 @@ public class DoctorRepository {
             return;
         }
 
-        String tableName = doctorPositionToTableName(position);
+        String tableName = DoctorSciencePosition.doctorPositionToTableName(position);
         String statementString = "insert into " + tableName + "(id)  values (?)";
         jdbcTemplate.update(statementString, id);
     }
@@ -99,7 +100,7 @@ public class DoctorRepository {
         if (rank == DoctorScienceRank.NONE) {
             return;
         }
-        String tableName = doctorRankToTableName(rank);
+        String tableName = DoctorScienceRank.doctorRankToTableName(rank);
         String statementString = "Insert into " + tableName + "(id) values(?)";
         jdbcTemplate.update(statementString, id);
     }
@@ -166,6 +167,83 @@ public class DoctorRepository {
         return res;
     }
 
+    public List<DoctorPolyclinicWorkStatistic> getPolyclinicStats(Integer doctorId,
+                                                                  Date beginDate,
+                                                                  Date endDate,
+                                                                  Integer polyclinicId,
+                                                                  DoctorType doctorType) {
+        String statementString = null;
+        String doctorTypeInnerJoin = " ";
+        if (doctorType != NONE) {
+            String tablename = DoctorType.doctorTypeToTableName(doctorType);
+            doctorTypeInnerJoin = " inner join " + tablename + " on (Doctors.id = " + tablename + ".id) ";
+        }
+        if (doctorId != null) {
+            statementString = "Select Doctors.id, Doctors.name, count(*)*1.0 / ( CAST((?) as DATE) - CAST((?) as DATE) ) as averageVisits\n" +
+                    "from Doctors inner join PatientsVisitPolyclinicCabinets on (Doctors.id = PatientsVisitPolyclinicCabinets.doctorId)\n" +
+                    "where dateOfVisit >= ? and dateOfVisit <= ? and Doctors.id=?\n" +
+                    "group by Doctors.id;";
+            return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(DoctorPolyclinicWorkStatistic.class),
+                    endDate, beginDate, beginDate, endDate, doctorId);
+        } else {
+            if (polyclinicId != null) {
+                statementString = "Select Doctors.id, Doctors.name, count(*)*1.0 / ( CAST((?) as DATE) - CAST((?) as DATE) ) as averageVisits\n" +
+                        "from Doctors inner join PatientsVisitPolyclinicCabinets on (Doctors.id = PatientsVisitPolyclinicCabinets.doctorId)\n" +
+                         " inner join PolyclinicCabinets on (PolyclinicCabinets.id = PatientsVisitPolyclinicCabinets.cabinetId)" +
+                        " inner join Polyclinics on (polyclinics.id = PolyclinicCabinets.polyclinicId)" + doctorTypeInnerJoin +
+                        "where dateOfVisit >= ? and dateOfVisit <= ? and Polyclinics.id=?\n" +
+                        "group by Doctors.id;";
+                return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(DoctorPolyclinicWorkStatistic.class),
+                        endDate, beginDate, beginDate, endDate, polyclinicId);
+            } else {
+                statementString = "Select Doctors.id, Doctors.name, count(*)*1.0 / ( CAST((?) as DATE) - CAST((?) as DATE) ) as averageVisits\n" +
+                        "from Doctors inner join PatientsVisitPolyclinicCabinets on (Doctors.id = PatientsVisitPolyclinicCabinets.doctorId)\n" +
+                        doctorTypeInnerJoin +
+                        "where dateOfVisit >= ? and dateOfVisit <= ? \n" +
+                        "group by Doctors.id;";
+                return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(DoctorPolyclinicWorkStatistic.class),
+                        endDate, beginDate, beginDate, endDate);
+
+            }
+        }
+    }
+
+
+    public List<DoctorStatisticEntity> getHospitalStats(Integer doctorId,
+                                                        Integer hospitalId,
+                                                        DoctorType doctorType) {
+        String statementString = null;
+        String doctorTypeInnerJoin = " ";
+        if (doctorType != NONE) {
+            String tablename = DoctorType.doctorTypeToTableName(doctorType);
+            doctorTypeInnerJoin = " inner join " + tablename + " on (Doctors.id = " + tablename + ".id) ";
+        }
+        if (doctorId != null) {
+            statementString = "Select Doctors.id, Doctors.name, count(PatientTreatsInHospital.patientId)\n" +
+                    "from Doctors left join PatientTreatsInHospital on (Doctors.id = PatientTreatsInHospital.doctorId)\n" +
+                    "where Doctors.id = ? "+
+                    "group by Doctors.id;";
+            return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(DoctorStatisticEntity.class), doctorId);
+        } else {
+            if (hospitalId != null) {
+                statementString = "Select Doctors.id, Doctors.name, count(PatientTreatsInHospital.patientId)\n" +
+                        "from Doctors left join PatientTreatsInHospital on (Doctors.id = PatientTreatsInHospital.doctorId)\n" +
+                         doctorTypeInnerJoin +
+                        "inner join hospitalwards on (hospitalwards.id = PatientTreatsInHospital.wardid) " +
+                        "inner join hospitaldepartments on (hospitalwards.departmentid = hospitaldepartments.id) " +
+                        "inner join hospitals h on hospitaldepartments.hospitalid = h.id " +
+                        "where h.id = ? "+
+                        "group by Doctors.id;";
+                return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(DoctorStatisticEntity.class), hospitalId);
+            } else {
+                statementString = "Select Doctors.id, Doctors.name, count(PatientTreatsInHospital.patientId)\n" +
+                        "from Doctors left join PatientTreatsInHospital on (Doctors.id = PatientTreatsInHospital.doctorId)\n" +
+                         doctorTypeInnerJoin +
+                        "group by Doctors.id;";
+                return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(DoctorStatisticEntity.class));
+            }
+        }
+    }
 
 
     private void insertDoctorType(int id, DoctorType type) {
@@ -178,50 +256,6 @@ public class DoctorRepository {
         jdbcTemplate.update(statementString, id);
     }
 
-    private String doctorTypeToTableName(DoctorType type) {
-        String tableName = null;
-        switch (type) {
-            case DENTIST:
-                tableName = "dentists";
-                break;
-            case SURGEON:
-                tableName = "surgeons";
-                break;
-            case THERAPIST:
-                tableName = "therapists";
-                break;
-            case RADIOLOGIST:
-                tableName = "radiologists";
-                break;
-            case OPHTHALMOLOGIST:
-                tableName = "ophthalmologists";
-                break;
-            case NEUROPATHOLOGIST:
-                tableName = "neuropathologists";
-                break;
-        }
-        return tableName;
-    }
-
-    private String doctorPositionToTableName(DoctorSciencePosition position) {
-        switch (position) {
-            case PROFESSOR:
-                return "professors";
-            case DOCENT:
-                return "docents";
-        }
-        return null;
-    }
-
-    private String doctorRankToTableName(DoctorScienceRank rank) {
-        switch (rank) {
-            case CANDIDATE_OF_SCIENCE:
-                return "candidatsofscience";
-            case DOCTOR_OF_SCIENCE:
-                return "doctorsofscience";
-        }
-        return null;
-    }
 
     private String getStatementStringOfDoctorWorksStatement(DoctorType doctorType, MedicineInstitutionType medicineInstitutionType) {
         String doctorTypeTableName = doctorTypeToTableName(doctorType);
@@ -351,8 +385,8 @@ public class DoctorRepository {
                                                                       DoctorSciencePosition position) {
         String statementString = null;
         String doctorTypeTableName = doctorTypeToTableName(doctorType);
-        String doctorRankTableName = doctorRankToTableName(rank);
-        String doctorPositionTableName = doctorPositionToTableName(position);
+        String doctorRankTableName = DoctorScienceRank.doctorRankToTableName(rank);
+        String doctorPositionTableName = DoctorSciencePosition.doctorPositionToTableName(position);
         String innerJoinForRank = " ";
         String innerJoinForPosition = " ";
         String innerJoinForType = " inner join " + doctorTypeTableName + " on (Doctors.id = " + doctorTypeTableName + ".id) ";
