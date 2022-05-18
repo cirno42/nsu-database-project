@@ -47,6 +47,18 @@ public class DoctorsController {
         return service.getListOfDoctorsWorkingInInstitutionWithSuchType(instId, doctorT, medicineInstitutionType);
     }
 
+    @GetMapping(path = "doctorworks/info/count")
+    public DoctorTypeStatisticEntity getCountOfDoctorsWorkingInHospitalWithSuchType
+            (@RequestParam(required = false) Integer instId, @RequestParam String doctorType, @RequestParam String institutionType) {
+        DoctorType doctorT= DoctorType.fromString(doctorType);
+        if (doctorT == DoctorType.NONE) {
+            return null;
+        }
+        MedicineInstitutionType medicineInstitutionType = MedicineInstitutionType.fromString(institutionType);
+        return service.getCountOfDoctorsWorkingInInstitutionWithSuchType(instId, doctorT,medicineInstitutionType);
+        // return service.getListOfDoctorsWorkingInInstitutionWithSuchType(instId, doctorT, medicineInstitutionType);
+    }
+
     @GetMapping(path = "doctorworks/operationsinfo")
     public List<DoctorDTO> getInfoAboutDoctorOperations
             (@RequestParam Integer count,
@@ -67,6 +79,20 @@ public class DoctorsController {
         return dtoList;
     }
 
+    @GetMapping(path = "doctorworks/operationsinfo/count")
+    public DoctorTypeStatisticEntity getCountOfDoctorOperations
+            (@RequestParam Integer count,
+             @RequestParam String institutionType,
+             @RequestParam String doctorType,
+             @RequestParam(required = false) Integer institutionId) {
+
+        var doctorT = DoctorType.fromString(doctorType);
+        var instT = MedicineInstitutionType.fromString(institutionType);
+
+
+        return  service.getCountOfDoctorsWhoDoneMoreOperations(count, institutionId, doctorT, instT);
+    }
+
     @GetMapping(path = "doctorworks/experinced")
     public List<DoctorExperienceEntity> getDoctorsWithExperienceMoreThanSpecified
             (@RequestParam(required = false) Integer institutionId,
@@ -77,8 +103,18 @@ public class DoctorsController {
                 experience,
                 MedicineInstitutionType.fromString(institutionType),
                 DoctorType.fromString(doctorType));
+    }
 
-
+    @GetMapping(path = "doctorworks/experinced/count")
+    public DoctorTypeStatisticEntity getCountOfDoctorsWithExperienceMoreThanSpecified
+            (@RequestParam(required = false) Integer institutionId,
+             @RequestParam Integer experience,
+             @RequestParam String doctorType,
+             @RequestParam String institutionType) {
+        return service.getCountOfDoctorsWithMoreExperience(institutionId,
+                experience,
+                MedicineInstitutionType.fromString(institutionType),
+                DoctorType.fromString(doctorType));
     }
 
     @GetMapping(path = "doctorranks")
@@ -105,6 +141,26 @@ public class DoctorsController {
             dtoList.add(DoctorDTO.EntityToDTO(el));
         });
         return dtoList;
+    }
+
+    @GetMapping(path = "doctorranks/count")
+    public DoctorTypeStatisticEntity getCountOfDoctorsWithSuchRankAndPosition
+            (@RequestParam(required = false) Integer institutionId,
+             @RequestParam String doctorType,
+             @RequestParam String institutionType,
+             @RequestParam(required = false) String rank,
+             @RequestParam(required = false) String position) {
+
+        DoctorType doctorT = DoctorType.fromString(doctorType);
+        DoctorScienceRank doctorR = DoctorScienceRank.fromString(rank);
+        DoctorSciencePosition doctorP = DoctorSciencePosition.fromString(position);
+
+
+        return service.getCountOfDoctorsWithSuchRankAndPosition(institutionId,
+                doctorT,
+                MedicineInstitutionType.fromString(institutionType),
+                doctorR,
+                doctorP);
     }
 
     @GetMapping("doctorstatistic/polyclinics")

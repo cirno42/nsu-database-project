@@ -30,14 +30,41 @@ public class DoctorService {
         return repository.getDoctorsWorkingInHospital(instId, type, institutionType);
     }
 
+    public DoctorTypeStatisticEntity getCountOfDoctorsWorkingInInstitutionWithSuchType
+            (Integer instId, DoctorType type, MedicineInstitutionType institutionType) {
+        var list = repository.getDoctorsWorkingInHospital(instId, type, institutionType);
+        DoctorTypeStatisticEntity entity = new DoctorTypeStatisticEntity();
+        entity.setCount(list.size());
+        entity.setType(type.toString());
+        return entity;
+    }
+
     public List<DoctorEntity> getListOfDoctorsWhoDoneMoreOperations
             (Integer count, Integer institutionId, DoctorType doctorType, MedicineInstitutionType institutionType) {
         return repository.getDoctorsWhoDoneMoreOperations(count, institutionId, doctorType, institutionType);
     }
 
+    public DoctorTypeStatisticEntity getCountOfDoctorsWhoDoneMoreOperations
+            (Integer count, Integer institutionId, DoctorType doctorType, MedicineInstitutionType institutionType) {
+        var list = repository.getDoctorsWhoDoneMoreOperations(count, institutionId, doctorType, institutionType);
+        DoctorTypeStatisticEntity entity = new DoctorTypeStatisticEntity();
+        entity.setCount(list.size());
+        entity.setType(doctorType.toString());
+        return entity;
+    }
+
     public List<DoctorExperienceEntity> getListOfDoctorsWithMoreExperience
             (Integer instId, Integer experience, MedicineInstitutionType institutionType, DoctorType doctorType) {
         return repository.getDoctorsWithMoreExperience(experience, instId, institutionType, doctorType);
+    }
+
+    public DoctorTypeStatisticEntity getCountOfDoctorsWithMoreExperience
+            (Integer instId, Integer experience, MedicineInstitutionType institutionType, DoctorType doctorType) {
+        var list = repository.getDoctorsWithMoreExperience(experience, instId, institutionType, doctorType);
+        DoctorTypeStatisticEntity entity = new DoctorTypeStatisticEntity();
+        entity.setCount(list.size());
+        entity.setType(doctorType.toString());
+        return entity;
     }
 
     public List<DoctorEntity> getDoctorsWithSuchRankAndPosition
@@ -47,6 +74,19 @@ public class DoctorService {
              DoctorScienceRank rank,
              DoctorSciencePosition position) {
         return repository.getDoctorsWithSuchRankAndPosition(instId, doctorType, institutionType, rank, position);
+    }
+
+    public DoctorTypeStatisticEntity getCountOfDoctorsWithSuchRankAndPosition
+            (Integer instId,
+             DoctorType doctorType,
+             MedicineInstitutionType institutionType,
+             DoctorScienceRank rank,
+             DoctorSciencePosition position) {
+        var list =  repository.getDoctorsWithSuchRankAndPosition(instId, doctorType, institutionType, rank, position);
+        DoctorTypeStatisticEntity entity = new DoctorTypeStatisticEntity();
+        entity.setCount(list.size());
+        entity.setType(doctorType.toString());
+        return entity;
     }
 
     public List<DoctorPolyclinicWorkStatistic> getPolyclinicStats(Integer doctorId,
