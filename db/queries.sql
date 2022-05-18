@@ -190,7 +190,7 @@ group by HospitalDepartments.id;
 
 --10
 
-Select Polyclinics.id, Polyclinics.name, count(*)
+Select Polyclinics.id, Polyclinics.name, count(*) as count
 from Polyclinics inner join PolyclinicCabinets on (Polyclinics.id = PolyclinicCabinets.polyclinicId)
 group by Polyclinics.id;
 
@@ -203,7 +203,7 @@ group by PolyclinicCabinets.id, Polyclinics.id;
 
 --11
 
-Select Doctors.id, Doctors.name, count(*)*1.0 / ( CAST(('27-Mar-2022') as DATE) - CAST(('14-Mar-2022') as DATE) ) as avaregeVisits
+Select Doctors.id, Doctors.name, count(*)*1.0 / ( CAST(('27-Mar-2022') as DATE) - CAST(('14-Mar-2022') as DATE) + 1) as avaregeVisits
 from Doctors inner join PatientsVisitPolyclinicCabinets on (Doctors.id = PatientsVisitPolyclinicCabinets.doctorId)
 where dateOfVisit >= '14-Mar-2022' and dateOfVisit <= '27-Mar-2022'
 group by Doctors.id;
@@ -221,10 +221,10 @@ from Patients inner join DoneOperationsForHospitals on (Patients.id = DoneOperat
 
 --14
 
-select Laboratories.id, Laboratories.name, count(*)*1.0 / ( CAST(('2020-01-23') as DATE) - CAST(('2020-01-21') as DATE) + 1) as avaregeServices  
+select Laboratories.id, Laboratories.name, count(*)*1.0 / ( CAST(('2020-01-23') as DATE) - CAST(('2020-01-21') as DATE) + 1) as averageServices  
 from BiologicalLaboratoryServicesHospital inner join Laboratories on (BiologicalLaboratoryServicesHospital.laboratoryId = Laboratories.id)
 inner join Hospitals on (BiologicalLaboratoryServicesHospital.hospitalId = Hospitals.id)
-where Hospitals.name = 'Городская больница №1' and BiologicalLaboratoryServicesHospital.serviceDate >= '2020-01-21' 
+where Hospitals.id = 1 and BiologicalLaboratoryServicesHospital.serviceDate >= '2020-01-21' 
 and  BiologicalLaboratoryServicesHospital.serviceDate <= '2020-01-23'
 group by Laboratories.id;
 

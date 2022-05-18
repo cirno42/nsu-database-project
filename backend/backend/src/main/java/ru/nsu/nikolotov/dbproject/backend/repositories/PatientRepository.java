@@ -18,9 +18,9 @@ import java.util.List;
 @Transactional
 public class PatientRepository {
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
     @Autowired
-    RepositoryUtils repositoryUtils;
+    private RepositoryUtils repositoryUtils;
 
 
     public PatientEntity getNextPatient(int id) {
