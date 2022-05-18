@@ -7,7 +7,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.nikolotov.dbproject.backend.entities.DiseaseGroupEntity;
+import ru.nsu.nikolotov.dbproject.backend.entities.HospitalPlacesStatisticEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalWardEntity;
+
+import java.util.List;
 
 @Repository
 @Transactional
@@ -50,5 +53,93 @@ public class HospitalWardRepository {
 
     public HospitalWardEntity getById(int id) {
         return repositoryUtils.getEntityId("HospitalWards", id, HospitalWardEntity.class);
+    }
+
+    public List<HospitalPlacesStatisticEntity> getCountOfWardsInHospital(Integer id) {
+        String statemntString = "Select h.id, h.name, count(*)\n" +
+                "from HospitalWards \n" +
+                "inner join hospitaldepartments hd on hospitalwards.departmentid = hd.id\n" +
+                "inner join hospitals h on hd.hospitalid = h.id\n" +
+                "where h.id = ?\n" +
+                "group by h.id, h.name;";
+        return jdbcTemplate.query(statemntString, BeanPropertyRowMapper.newInstance(HospitalPlacesStatisticEntity.class), id);
+    }
+
+    public List<HospitalPlacesStatisticEntity> getCountOfWardsInDepartment(Integer id) {
+        String statemntString = "Select hd.id, hd.name, count(*)\n" +
+                "from HospitalWards \n" +
+                "inner join hospitaldepartments hd on hospitalwards.departmentid = hd.id\n" +
+                "where hd.id = ?\n" +
+                "group by hd.id, hd.name;";
+        return jdbcTemplate.query(statemntString, BeanPropertyRowMapper.newInstance(HospitalPlacesStatisticEntity.class), id);
+    }
+
+    public List<HospitalPlacesStatisticEntity> getCountOfPlacesInHospital(Integer id) {
+        String statementString = "Select h.id, h.name, sum(hospitalwards.totalplaces) as count\n" +
+                "from HospitalWards\n" +
+                "inner join hospitaldepartments hd on hospitalwards.departmentid = hd.id\n" +
+                "inner join hospitals h on hd.hospitalid = h.id\n" +
+                "where h.id = ?\n" +
+                "group by h.id, h.name;";
+        return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(HospitalPlacesStatisticEntity.class), id);
+
+    }
+
+    public List<HospitalPlacesStatisticEntity> getCountOfPlacesInDepartment(Integer id) {
+        String statementString = "Select hd.id, hd.name, sum(hospitalwards.totalplaces) as count \n" +
+                "from HospitalWards\n" +
+                "inner join hospitaldepartments hd on hospitalwards.departmentid = hd.id\n" +
+                "where hd.id = ?\n" +
+                "group by hd.id, hd.name;\n";
+        return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(HospitalPlacesStatisticEntity.class), id);
+    }
+
+    public List<HospitalPlacesStatisticEntity> getCountOfFreeWardsInHospital(Integer id) {
+        String statementString = "Select wards.hospitalId as id, wards.name as name, count(*)  from (\n" +
+                "Select HospitalWards.id, HospitalWards.wardNumber, HospitalWards.totalPlaces, h.name, h.id as hospitalId, count(PatientTreatsInHospital.wardId) as busyPlaces, totalPlaces - count(PatientTreatsInHospital.wardId) as freePlaces\n" +
+                "from HospitalWards left join PatientTreatsInHospital on (HospitalWards.id = PatientTreatsInHospital.wardId)\n" +
+                "                   inner join hospitaldepartments hd on hospitalwards.departmentid = hd.id\n" +
+                "                   inner join hospitals h on hd.hospitalid = h.id\n" +
+                "where h.id = ?\n" +
+                "group by h.name, HospitalWards.wardNumber, HospitalWards.totalPlaces, HospitalWards.id, h.id)\n" +
+                "    as wards where wards.freePlaces = wards.totalPlaces\n" +
+                "group by wards.hospitalId, wards.name;";
+
+        return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(HospitalPlacesStatisticEntity.class), id);
+    }
+
+    public List<HospitalPlacesStatisticEntity> getCountOfFreeWardsInDepartment(Integer id) {
+        String statementString = "Select wards.depId as id, wards.name as name, count(*) from (\n" +
+                "Select HospitalWards.id, HospitalWards.wardNumber, HospitalWards.totalPlaces, hd.name, hd.id as depId, count(PatientTreatsInHospital.wardId) as busyPlaces, totalPlaces - count(PatientTreatsInHospital.wardId) as freePlaces\n" +
+                "from HospitalWards left join PatientTreatsInHospital on (HospitalWards.id = PatientTreatsInHospital.wardId)\n" +
+                "                   inner join hospitaldepartments hd on hospitalwards.departmentid = hd.id\n" +
+                "where hd.id = ?\n" +
+                "group by hd.name, HospitalWards.wardNumber, HospitalWards.totalPlaces, HospitalWards.id, hd.id)\n" +
+                "    as wards where wards.freePlaces = wards.totalPlaces\n" +
+                "group by wards.depId, wards.name;";
+
+        return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(HospitalPlacesStatisticEntity.class), id);
+    }
+
+    public List<HospitalPlacesStatisticEntity> getCountOfFreePlacesInHospital(Integer id) {
+        String statementString = "Select h.id, h.name, sum(wards.freePlaces) as count from (Select HospitalWards.id, hospitalwards.departmentid, totalPlaces - count(PatientTreatsInHospital.wardId) as freePlaces\n" +
+                "from HospitalWards left join PatientTreatsInHospital on (HospitalWards.id = PatientTreatsInHospital.wardId)\n" +
+                "group by HospitalWards.id) as wards\n" +
+                "inner join hospitaldepartments on departmentid = hospitaldepartments.id\n" +
+                "inner join hospitals h on hospitaldepartments.hospitalid = h.id\n" +
+                "where h.id = ?\n" +
+                "group by h.id;";
+        return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(HospitalPlacesStatisticEntity.class), id);
+    }
+
+    public List<HospitalPlacesStatisticEntity> getCountOfFreePlacesInDepartment(Integer id) {
+        String statementString = "Select hospitaldepartments.id, hospitaldepartments.name, sum(wards.freePlaces) as count from (Select HospitalWards.id, hospitalwards.departmentid, totalPlaces - count(PatientTreatsInHospital.wardId) as freePlaces\n" +
+                "from HospitalWards left join PatientTreatsInHospital on (HospitalWards.id = PatientTreatsInHospital.wardId)\n" +
+                "group by HospitalWards.id) as wards\n" +
+                "inner join hospitaldepartments on departmentid = hospitaldepartments.id\n" +
+                "where hospitaldepartments.id = ?\n" +
+                "group by hospitaldepartments.id;";
+
+        return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(HospitalPlacesStatisticEntity.class), id);
     }
 }
