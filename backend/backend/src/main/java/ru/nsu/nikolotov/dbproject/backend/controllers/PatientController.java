@@ -4,8 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.nsu.nikolotov.dbproject.backend.entities.DoctorTreatsPatientEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.PatientEntity;
 import ru.nsu.nikolotov.dbproject.backend.services.PatientService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/patients")
@@ -41,5 +44,14 @@ public class PatientController {
     @DeleteMapping
     public void deletePatient(@RequestParam int id) {
         patientService.deletePatientById(id);
+    }
+
+    @GetMapping("patientswhotreatsinsuchplace")
+    List<DoctorTreatsPatientEntity> getPatientsWhoTreatsInSuchPlace(
+            @RequestParam(required = false) Integer wardId,
+            @RequestParam(required = false) Integer departmentId,
+            @RequestParam(required = false) Integer hospitalId) {
+
+        return patientService.getPatientsWhoTreatsInSuchPlace(hospitalId, departmentId, wardId);
     }
 }

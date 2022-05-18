@@ -6,11 +6,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.nikolotov.dbproject.backend.entities.DoctorEntity;
-import ru.nsu.nikolotov.dbproject.backend.entities.DoctorWorksAtHospitalEntity;
+import ru.nsu.nikolotov.dbproject.backend.entities.DoctorExperienceEntity;
+import ru.nsu.nikolotov.dbproject.backend.entities.DoctorWorksAtInstitutionEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.PolyclinicEntity;
 import ru.nsu.nikolotov.dbproject.backend.types.DoctorSciencePosition;
 import ru.nsu.nikolotov.dbproject.backend.types.DoctorScienceRank;
 import ru.nsu.nikolotov.dbproject.backend.types.DoctorType;
+import ru.nsu.nikolotov.dbproject.backend.types.MedicineInstitutionType;
 
 import java.util.List;
 
@@ -21,6 +23,8 @@ public class DoctorRepository {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private RepositoryUtils repositoryUtils;
+
+
 
     public DoctorEntity create(DoctorEntity entity) {
         var id = repositoryUtils.getNextval("doctors_id_seq");
@@ -58,15 +62,22 @@ public class DoctorRepository {
 
     }
 
-    public List<DoctorWorksAtHospitalEntity> getDoctorsWorkingInHospital(int hospitalId, DoctorType doctorType) {
-        String tableName = doctorTypeToTableName(doctorType);
-        String statementString = "Select Doctors.id as doctorId, Doctors.name as doctorName, Hospitals.id as hospitalId, Hospitals.name as hospitalName, DoctorWorksAtHospital.salary, DoctorWorksAtHospital.contractStartDate, DoctorWorksAtHospital.contractEndDate, Doctors.vacationStart, " +
-                "Doctors.vacationEnd, Doctors.salaryCoefficient " +
-                "from (" + tableName + " INNER JOIN DoctorWorksAtHospital on (" + tableName + ".id = DoctorWorksAtHospital.doctorId) " +
-                "INNER JOIN Doctors on (" + tableName + ".id = Doctors.id)) " +
-                "INNER JOIN Hospitals on (DoctorWorksAtHospital.hospitalId = Hospitals.id) where hospitalId = ?";
-        var res = jdbcTemplate.query(statementString,
-                BeanPropertyRowMapper.newInstance(DoctorWorksAtHospitalEntity.class), hospitalId);
+    public List<DoctorWorksAtInstitutionEntity> getDoctorsWorkingInHospital
+            (Integer instId, DoctorType doctorType, MedicineInstitutionType institutionType) {
+
+        String doctorTypeTableName = doctorTypeToTableName(doctorType);
+        String statementString = getStatementStringOfDoctorWorksStatement(doctorType, institutionType);
+        if (statementString == null) {
+            return null;
+        }
+        List<DoctorWorksAtInstitutionEntity> res;
+        if (institutionType != MedicineInstitutionType.ALL) {
+            res = jdbcTemplate.query(statementString,
+                    BeanPropertyRowMapper.newInstance(DoctorWorksAtInstitutionEntity.class), instId);
+        } else {
+            res = jdbcTemplate.query(statementString,
+                    BeanPropertyRowMapper.newInstance(DoctorWorksAtInstitutionEntity.class));
+        }
         return res;
     }
 
@@ -79,15 +90,7 @@ public class DoctorRepository {
             return;
         }
 
-        String tableName = "";
-        switch (position) {
-            case DOCENT:
-                tableName = "docents";
-                break;
-            case PROFESSOR:
-                tableName = "professors";
-                break;
-        }
+        String tableName = doctorPositionToTableName(position);
         String statementString = "insert into " + tableName + "(id)  values (?)";
         jdbcTemplate.update(statementString, id);
     }
@@ -96,15 +99,7 @@ public class DoctorRepository {
         if (rank == DoctorScienceRank.NONE) {
             return;
         }
-        String tableName = "";
-        switch (rank) {
-            case CANDIDATE_OF_SCIENCE:
-                tableName = "candidatsofscience";
-                break;
-            case DOCTOR_OF_SCIENCE:
-                tableName = "doctorsofscience";
-                break;
-        }
+        String tableName = doctorRankToTableName(rank);
         String statementString = "Insert into " + tableName + "(id) values(?)";
         jdbcTemplate.update(statementString, id);
     }
@@ -114,6 +109,64 @@ public class DoctorRepository {
                 "values (?, 0, 0)";
         jdbcTemplate.update(statementString, id);
     }
+
+    public List<DoctorEntity> getDoctorsWhoDoneMoreOperations
+            (Integer count, Integer institutionId, DoctorType doctorType, MedicineInstitutionType institutionType) {
+        String statementString = getStatementStringOfDoctorDoneMoreOperations(doctorType, institutionType);
+        if (statementString == null) {
+            return null;
+        }
+        List<DoctorEntity> res;
+        if (institutionType != MedicineInstitutionType.ALL) {
+            res = jdbcTemplate.query(statementString,
+                    BeanPropertyRowMapper.newInstance(DoctorEntity.class), institutionId, count);
+        } else {
+            res = jdbcTemplate.query(statementString,
+                    BeanPropertyRowMapper.newInstance(DoctorEntity.class), count, count);
+        }
+        return res;
+    }
+
+    public List<DoctorExperienceEntity> getDoctorsWithMoreExperience
+            (Integer experience, Integer instId, MedicineInstitutionType institutionType, DoctorType doctorType) {
+        String statementString = getStatementStringForDoctorExperience(institutionType, doctorType);
+        if (statementString == null) {
+            return null;
+        }
+        List<DoctorExperienceEntity> res;
+        if (institutionType != MedicineInstitutionType.ALL) {
+            res = jdbcTemplate.query(statementString,
+                    BeanPropertyRowMapper.newInstance(DoctorExperienceEntity.class), instId, experience);
+        } else {
+            res = jdbcTemplate.query(statementString,
+                    BeanPropertyRowMapper.newInstance(DoctorExperienceEntity.class), experience, experience);
+        }
+        return res;
+    }
+
+    public List<DoctorEntity> getDoctorsWithSuchRankAndPosition
+            (Integer instId,
+             DoctorType doctorType,
+             MedicineInstitutionType institutionType,
+             DoctorScienceRank rank,
+             DoctorSciencePosition position) {
+
+        String statementString = getStatementStringForDoctorsWithSuchRankAndPosition(doctorType, institutionType, rank, position);
+        if (statementString == null) {
+            return null;
+        }
+        List<DoctorEntity> res;
+        if (institutionType != MedicineInstitutionType.ALL) {
+            res = jdbcTemplate.query(statementString,
+                    BeanPropertyRowMapper.newInstance(DoctorEntity.class), instId);
+        } else {
+            res = jdbcTemplate.query(statementString,
+                    BeanPropertyRowMapper.newInstance(DoctorEntity.class));
+        }
+        return res;
+    }
+
+
 
     private void insertDoctorType(int id, DoctorType type) {
         if (type == DoctorType.NONE) {
@@ -148,5 +201,199 @@ public class DoctorRepository {
                 break;
         }
         return tableName;
+    }
+
+    private String doctorPositionToTableName(DoctorSciencePosition position) {
+        switch (position) {
+            case PROFESSOR:
+                return "professors";
+            case DOCENT:
+                return "docents";
+        }
+        return null;
+    }
+
+    private String doctorRankToTableName(DoctorScienceRank rank) {
+        switch (rank) {
+            case CANDIDATE_OF_SCIENCE:
+                return "candidatsofscience";
+            case DOCTOR_OF_SCIENCE:
+                return "doctorsofscience";
+        }
+        return null;
+    }
+
+    private String getStatementStringOfDoctorWorksStatement(DoctorType doctorType, MedicineInstitutionType medicineInstitutionType) {
+        String doctorTypeTableName = doctorTypeToTableName(doctorType);
+        String statementString = null;
+        switch (medicineInstitutionType) {
+            case NONE:
+                return null;
+            case HOSPITAL:
+                statementString = "Select Doctors.id as doctorId, Doctors.name as doctorName, Hospitals.id as institutionId, Hospitals.name as institutionName, DoctorWorksAtHospital.salary, DoctorWorksAtHospital.contractStartDate, DoctorWorksAtHospital.contractEndDate, Doctors.vacationStart, " +
+                    "Doctors.vacationEnd, Doctors.salaryCoefficient " +
+                    "from (" + doctorTypeTableName + " INNER JOIN DoctorWorksAtHospital on (" + doctorTypeTableName + ".id = DoctorWorksAtHospital.doctorId) " +
+                    "INNER JOIN Doctors on (" + doctorTypeTableName + ".id = Doctors.id)) " +
+                    "INNER JOIN Hospitals on (DoctorWorksAtHospital.hospitalId = Hospitals.id) where hospitalId = ?";
+                break;
+            case POLYCLINIC:
+                statementString = "Select Doctors.id as doctorId, Doctors.name as doctorName, Polyclinics.id as institutionId, Polyclinics.name as institutionName, " +
+                        "DoctorWorksAtPolyclinic.salary, DoctorWorksAtPolyclinic.contractStartDate, " +
+                        "DoctorWorksAtPolyclinic.contractEndDate, Doctors.vacationStart, " +
+                        "Doctors.vacationEnd, Doctors.salaryCoefficient " +
+                        "from (Surgeons INNER JOIN DoctorWorksAtPolyclinic on (Surgeons.id = DoctorWorksAtPolyclinic.doctorId) " +
+                        "INNER JOIN Doctors on (Surgeons.id = Doctors.id)) " +
+                        "INNER JOIN Polyclinics on (DoctorWorksAtPolyclinic.polyclinicId = Polyclinics.id) " +
+                        "Where polyclinicid = ?;";
+                break;
+            case ALL:
+                statementString = "Select Doctors.id as doctorId, Doctors.name as doctorName, Hospitals.id as institutionId, Hospitals.name as institutionName, DoctorWorksAtHospital.salary, DoctorWorksAtHospital.contractStartDate, DoctorWorksAtHospital.contractEndDate, Doctors.vacationStart, " +
+                        "Doctors.vacationEnd, Doctors.salaryCoefficient " +
+                        "from (" + doctorTypeTableName + " INNER JOIN DoctorWorksAtHospital on (" + doctorTypeTableName + ".id = DoctorWorksAtHospital.doctorId) " +
+                        "INNER JOIN Doctors on (" + doctorTypeTableName + ".id = Doctors.id)) " +
+                        "INNER JOIN Hospitals on (DoctorWorksAtHospital.hospitalId = Hospitals.id) "
+                        + "UNION " +
+                        "Select Doctors.id as doctorId, Doctors.name as doctorName, Polyclinics.id as institutionId, Polyclinics.name as institutionName, " +
+                        "DoctorWorksAtPolyclinic.salary, DoctorWorksAtPolyclinic.contractStartDate, " +
+                        "DoctorWorksAtPolyclinic.contractEndDate, Doctors.vacationStart, " +
+                        "Doctors.vacationEnd, Doctors.salaryCoefficient " +
+                        "from (Surgeons INNER JOIN DoctorWorksAtPolyclinic on (Surgeons.id = DoctorWorksAtPolyclinic.doctorId) " +
+                        "INNER JOIN Doctors on (Surgeons.id = Doctors.id)) " +
+                        "INNER JOIN Polyclinics on (DoctorWorksAtPolyclinic.polyclinicId = Polyclinics.id) ";
+        }
+        return statementString;
+    }
+
+    private String getStatementStringOfDoctorDoneMoreOperations (DoctorType doctorType, MedicineInstitutionType institutionType) {
+        String doctorTableName = doctorTypeToTableName(doctorType);
+        String statementString = null;
+        switch (institutionType){
+            case HOSPITAL:
+                statementString = "Select Doctors.id, Doctors.name, doctors.salarycoefficient, doctors.vacationstart, doctors.vacationend from DoneOperationsForHospitals\n" +
+                        "inner join Doctors on (DoneOperationsForHospitals.doctorId = Doctors.id)\n" +
+                        "inner join "+ doctorTableName + " on (doctors.id = " + doctorTableName + ".id)\n" +
+                        "where DoneOperationsForHospitals.hospitalid = ?\n" +
+                        "group by Doctors.id\n" +
+                        "Having count(*) >= ?;";
+                break;
+            case POLYCLINIC:
+                statementString = "Select Doctors.id, Doctors.name, doctors.salarycoefficient, doctors.vacationstart, doctors.vacationend from DoneOperationsForPolyclinics\n" +
+                        "inner join Doctors on (DoneOperationsForPolyclinics.doctorId = Doctors.id)\n" +
+                        "inner join "+ doctorTableName + " on (doctors.id = " + doctorTableName + ".id)\n" +
+                        "where DoneOperationsForPolyclinics.polyclinicId = ?\n" +
+                        "group by Doctors.id\n" +
+                        "Having count(*) >= ?;";
+                break;
+            case ALL:
+                statementString =
+                        "Select Doctors.id, Doctors.name, doctors.salarycoefficient, doctors.vacationstart, doctors.vacationend from DoneOperationsForHospitals\n" +
+                                "inner join Doctors on (DoneOperationsForHospitals.doctorId = Doctors.id)\n" +
+                                "inner join "+ doctorTableName + " on (doctors.id = " + doctorTableName + ".id)\n" +
+                                "group by Doctors.id\n" +
+                                "Having count(*) >= ? "
+                                + "UNION "
+                        + "Select Doctors.id, Doctors.name, doctors.salarycoefficient, doctors.vacationstart, doctors.vacationend from DoneOperationsForPolyclinics\n" +
+                                "inner join Doctors on (DoneOperationsForPolyclinics.doctorId = Doctors.id)\n" +
+                                "inner join "+ doctorTableName + " on (doctors.id = " + doctorTableName + ".id)\n" +
+                                "group by Doctors.id\n" +
+                                "Having count(*) >= ?;";
+                break;
+
+        }
+        return statementString;
+    }
+
+    public String getStatementStringForDoctorExperience(MedicineInstitutionType institutionType, DoctorType doctorType) {
+        String statementString = null;
+        String doctorTypeTableName = doctorTypeToTableName(doctorType);
+        switch (institutionType) {
+            case HOSPITAL:
+                statementString = "Select Doctors.id, Doctors.name, sum(dismissaldate - employmentdate) as workDays\n" +
+                        "from Doctors inner join DoctorWorkedAtHospital on (Doctors.id = DoctorWorkedAtHospital.doctorId)\n" +
+                        "inner join Hospitals on (Hospitals.id = DoctorWorkedAtHospital.hospitalId)\n" +
+                        "inner join " + doctorTypeTableName + " on (doctors.id = "+ doctorTypeTableName + ".id)\n" +
+                        "where hospitals.id = ?\n" +
+                        "group by Doctors.id\n" +
+                        "having sum(dismissaldate - employmentdate)  > ?;\n";
+                break;
+            case POLYCLINIC:
+                statementString = "Select Doctors.id, Doctors.name, sum(dismissaldate - employmentdate) as workDays\n" +
+                        "from Doctors inner join DoctorWorkedAtPolyclinic on (Doctors.id = DoctorWorkedAtPolyclinic.doctorId)\n" +
+                        "inner join Polyclinics on (Polyclinics.id = DoctorWorkedAtPolyclinic.polyclinicId)\n" +
+                        "inner join " + doctorTypeTableName + " on (doctors.id = "+ doctorTypeTableName + ".id)\n" +
+                        "where Polyclinics.id = ?\n" +
+                        "group by Doctors.id\n" +
+                        "having sum(dismissaldate - employmentdate)  > ?;\n";
+                break;
+            case ALL:
+                statementString = "Select Doctors.id, Doctors.name, sum(dismissaldate - employmentdate) as workDays\n" +
+                        "from Doctors inner join DoctorWorkedAtHospital on (Doctors.id = DoctorWorkedAtHospital.doctorId)\n" +
+                        "inner join Hospitals on (Hospitals.id = DoctorWorkedAtHospital.hospitalId)\n" +
+                        "inner join " + doctorTypeTableName + " on (doctors.id = "+ doctorTypeTableName + ".id)\n" +
+                        "group by Doctors.id\n" +
+                        "having sum(dismissaldate - employmentdate)  > ?\n"
+                + "UNION " +
+                        "Select Doctors.id, Doctors.name, sum(dismissaldate - employmentdate) as workDays\n" +
+                        "from Doctors inner join DoctorWorkedAtPolyclinic on (Doctors.id = DoctorWorkedAtPolyclinic.doctorId)\n" +
+                        "inner join Polyclinics on (Polyclinics.id = DoctorWorkedAtPolyclinic.polyclinicId)\n" +
+                        "inner join " + doctorTypeTableName + " on (doctors.id = "+ doctorTypeTableName + ".id)\n" +
+                        "group by Doctors.id\n" +
+                        "having sum(dismissaldate - employmentdate)  > ?;\n";
+                break;
+
+        }
+        return statementString;
+    }
+
+    private String getStatementStringForDoctorsWithSuchRankAndPosition(DoctorType doctorType,
+                                                                      MedicineInstitutionType institutionType,
+                                                                      DoctorScienceRank rank,
+                                                                      DoctorSciencePosition position) {
+        String statementString = null;
+        String doctorTypeTableName = doctorTypeToTableName(doctorType);
+        String doctorRankTableName = doctorRankToTableName(rank);
+        String doctorPositionTableName = doctorPositionToTableName(position);
+        String innerJoinForRank = " ";
+        String innerJoinForPosition = " ";
+        String innerJoinForType = " inner join " + doctorTypeTableName + " on (Doctors.id = " + doctorTypeTableName + ".id) ";
+        if (doctorRankTableName != null) {
+            innerJoinForRank = " inner join " + doctorRankTableName + " on (Doctors.id = " + doctorRankTableName + ".id) ";
+        }
+        if (doctorPositionTableName != null) {
+            innerJoinForPosition = " inner join " + doctorPositionTableName + " on (Doctors.id = " + doctorPositionTableName + ".id) ";
+        }
+
+
+        switch (institutionType) {
+            case HOSPITAL:
+                statementString = "Select Doctors.id, Doctors.name, Doctors.vacationStart, Doctors.vacationEnd, Doctors.salaryCoefficient from\n" +
+                        "    Doctors\n"
+                        + innerJoinForPosition + innerJoinForRank + innerJoinForType +
+                        " inner join DoctorWorksAtHospital on (DoctorWorksAtHospital.doctorId = Doctors.id)\n" +
+                        " inner join Hospitals on (DoctorWorksAtHospital.hospitalId = Hospitals.id)\n" +
+                        "Where (Hospitals.id = ?);";
+                break;
+            case POLYCLINIC:
+                statementString = "Select Doctors.id, Doctors.name, Doctors.vacationStart, Doctors.vacationEnd, Doctors.salaryCoefficient from\n" +
+                        "    Doctors\n"
+                        + innerJoinForPosition + innerJoinForRank + innerJoinForType +
+                        " inner join DoctorWorksAtPolyclinic on (DoctorWorksAtPolyclinic.doctorId = Doctors.id)\n" +
+                        " inner join Polyclinics on (DoctorWorksAtPolyclinic.polyclinicId = Polyclinics.id)\n" +
+                        "Where (Polyclinics.id = ?);";
+                break;
+            case ALL:
+                statementString = "Select Doctors.id, Doctors.name, Doctors.vacationStart, Doctors.vacationEnd, Doctors.salaryCoefficient from\n" +
+                        "    Doctors\n"
+                        + innerJoinForPosition + innerJoinForRank + innerJoinForType +
+                        " inner join DoctorWorksAtHospital on (DoctorWorksAtHospital.doctorId = Doctors.id)\n" +
+                        " inner join Hospitals on (DoctorWorksAtHospital.hospitalId = Hospitals.id) UNION \n" +
+                        "Select Doctors.id, Doctors.name, Doctors.vacationStart, Doctors.vacationEnd, Doctors.salaryCoefficient from\n" +
+                        "Doctors\n"
+                        + innerJoinForPosition + innerJoinForRank + innerJoinForType +
+                        " inner join DoctorWorksAtPolyclinic on (DoctorWorksAtPolyclinic.doctorId = Doctors.id)\n" +
+                        " inner join Polyclinics on (DoctorWorksAtPolyclinic.polyclinicId = Polyclinics.id)\n";
+                break;
+        }
+        return statementString;
     }
 }

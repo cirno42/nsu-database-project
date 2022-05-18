@@ -7,11 +7,11 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class DoctorWorksAtHospitalEntity {
+public class DoctorWorksAtInstitutionEntity {
     private Integer doctorId;
     private String doctorName;
-    private Integer hospitalId;
-    private String hospitalName;
+    private Integer institutionId;
+    private String institutionName;
     private Integer salary;
     private Date contractStartDate;
     private Date contractEndDate;

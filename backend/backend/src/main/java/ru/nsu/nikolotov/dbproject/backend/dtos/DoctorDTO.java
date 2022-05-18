@@ -43,9 +43,15 @@ public class DoctorDTO {
         dto.setVacationStart(entity.getVacationStart());
         dto.setVacationEnd(entity.getVacationEnd());
         dto.setSalaryCoefficient(entity.getSalaryCoefficient());
-        dto.setDoctorTypeString(entity.getDoctorType().toString());
-        dto.setDoctorSciencePositionString(entity.getDoctorSciencePosition().toString());
-        dto.setDoctorScienceRankString(entity.getDoctorScienceRank().toString());
+        if (entity.getDoctorType() != null) {
+            dto.setDoctorTypeString(entity.getDoctorType().toString());
+        }
+        if (entity.getDoctorSciencePosition() != null) {
+            dto.setDoctorSciencePositionString(entity.getDoctorSciencePosition().toString());
+        }
+        if (entity.getDoctorScienceRank() != null) {
+            dto.setDoctorScienceRankString(entity.getDoctorScienceRank().toString());
+        }
         return dto;
     }
 }
