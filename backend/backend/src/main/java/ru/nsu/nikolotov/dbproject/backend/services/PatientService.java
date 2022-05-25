@@ -61,4 +61,6 @@ public class PatientService {
     public List<DoneOperationsForPatientEntity> getPatientWhoHadOperationsInHospital(Date beginDate, Date endDate, Integer hospitalId) {
         return patientRepository.getPatientWhoHadOperationsInHospital(beginDate, endDate, hospitalId);
     }
+
+    public List<PatientEntity> getAll() {return patientRepository.getAll();}
 }

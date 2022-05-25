@@ -1,5 +1,6 @@
 package ru.nsu.nikolotov.dbfrontend.app;
 
+import ru.nsu.nikolotov.dbfrontend.api.PatientAPI;
 import ru.nsu.nikolotov.dbfrontend.layout.VerticalLayout;
 
 import javax.imageio.ImageIO;
@@ -23,6 +24,7 @@ public class App {
 
     private final HospitalsFrame hospitalsFrame = new HospitalsFrame();
     private final DoctorsFrame doctorsFrame = new DoctorsFrame();
+
 
     public App()  {
         frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
@@ -64,5 +66,13 @@ public class App {
     private void addActionListeners() {
         buttonToHospitalsFrame.addActionListener(l -> hospitalsFrame.setFrameVisible(true));
         buttonToDoctorsFrame.addActionListener(l -> doctorsFrame.callFrame(true));
+        buttonToServiceStaffFrame.addActionListener(l ->  {
+            ServiceStaffFrame serviceStaffFrame = new ServiceStaffFrame();
+            serviceStaffFrame.callFrame();
+        });
+        buttonToPatientsFrame.addActionListener(l -> {
+            PatientsFrame patientsFrame = new PatientsFrame();
+            patientsFrame.callFrame();
+        });
     }
 }

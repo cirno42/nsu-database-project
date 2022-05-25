@@ -23,6 +23,12 @@ public class PatientRepository {
     private RepositoryUtils repositoryUtils;
 
 
+    public List<PatientEntity> getAll() {
+        String statementString = "select * from patients";
+        return jdbcTemplate.query(statementString,
+                BeanPropertyRowMapper.newInstance(PatientEntity.class));
+    }
+
     public PatientEntity getNextPatient(int id) {
         Integer nextId = repositoryUtils.getNextId("patients", id);
         if (nextId == null) {

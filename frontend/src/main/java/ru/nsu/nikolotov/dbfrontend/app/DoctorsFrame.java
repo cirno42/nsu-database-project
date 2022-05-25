@@ -4,7 +4,6 @@ package ru.nsu.nikolotov.dbfrontend.app;
 import kong.unirest.GenericType;
 import kong.unirest.Unirest;
 import lombok.SneakyThrows;
-import ru.nsu.nikolotov.dbfrontend.apiutils.HttpUtils;
 import ru.nsu.nikolotov.dbfrontend.app.doctorssubframes.CreateDoctorFrame;
 import ru.nsu.nikolotov.dbfrontend.app.doctorssubframes.SpecialQueriesMenu;
 import ru.nsu.nikolotov.dbfrontend.dtos.DoctorDTO;

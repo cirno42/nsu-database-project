@@ -17,6 +17,11 @@ public class TableFrame {
     private final JTable table = new JTable(tableModel);
     private final JScrollPane scrollPane = new JScrollPane(table);
 
+    public static void showTable(List<? extends EntityForInsertIntoJTable> data) {
+        var frame = new TableFrame(data);
+        frame.callFrame();
+    }
+
     public TableFrame(List<? extends EntityForInsertIntoJTable> data) {
 
         backButton.addActionListener(l -> frame.dispose());

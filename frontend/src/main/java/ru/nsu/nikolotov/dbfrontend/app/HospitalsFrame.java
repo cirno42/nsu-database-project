@@ -3,7 +3,6 @@ package ru.nsu.nikolotov.dbfrontend.app;
 import kong.unirest.GenericType;
 import kong.unirest.Unirest;
 import lombok.SneakyThrows;
-import ru.nsu.nikolotov.dbfrontend.apiutils.HttpUtils;
 import ru.nsu.nikolotov.dbfrontend.entities.HospitalEntity;
 import ru.nsu.nikolotov.dbfrontend.layout.VerticalLayout;
 

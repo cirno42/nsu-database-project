@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.nsu.nikolotov.dbproject.backend.entities.ServiceStaffEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.ServiceStaffInfoEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.ServiceStaffTypeStatistic;
 import ru.nsu.nikolotov.dbproject.backend.services.ServiceStaffInfoService;
@@ -19,6 +20,11 @@ import java.util.List;
 public class ServiceStaffController {
     @Autowired
     ServiceStaffInfoService service;
+
+    @GetMapping("getall")
+    public List<ServiceStaffEntity> getAll() {
+        return service.getAll();
+    }
 
     @GetMapping("servicestaffinfo")
     public List<ServiceStaffInfoEntity> getInfoAboutServiceStaff(

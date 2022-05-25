@@ -6,10 +6,16 @@ import org.springframework.stereotype.Service;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalDepartmentEntity;
 import ru.nsu.nikolotov.dbproject.backend.repositories.HospitalDepartmentRepository;
 
+import java.util.List;
+
 @Service
 public class HospitalDepartmentService {
     @Autowired
     HospitalDepartmentRepository departmentRepository;
+
+    public List<HospitalDepartmentEntity> getDepartmentsInHospital(Integer hospitalId) {
+        return departmentRepository.getDepartmentsInHospital(hospitalId);
+    }
 
     public HospitalDepartmentEntity createHospitalDepartment(HospitalDepartmentEntity department) {
         return departmentRepository.createHospitalDepartment(department);

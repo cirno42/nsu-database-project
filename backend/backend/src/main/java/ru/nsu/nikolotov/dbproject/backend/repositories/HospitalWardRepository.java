@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.nikolotov.dbproject.backend.entities.DiseaseGroupEntity;
+import ru.nsu.nikolotov.dbproject.backend.entities.HospitalDepartmentEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalPlacesStatisticEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalWardEntity;
 
@@ -19,6 +20,11 @@ public class HospitalWardRepository {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private RepositoryUtils repositoryUtils;
+
+    public List<HospitalWardEntity> getWardsInDepartment(Integer departmentId) {
+        String statementString = "Select * from hospitalwards where departmentid=?";
+        return jdbcTemplate.query(statementString,  BeanPropertyRowMapper.newInstance(HospitalWardEntity.class), departmentId);
+    }
 
     public HospitalWardEntity create(HospitalWardEntity entity) {
         var id = repositoryUtils.getNextval("hospitalward_id_seq");

@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalDepartmentEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalEntity;
 
+import java.util.List;
+
 @Repository
 @Transactional
 public class HospitalDepartmentRepository {
@@ -15,6 +17,11 @@ public class HospitalDepartmentRepository {
     JdbcTemplate jdbcTemplate;
     @Autowired
     RepositoryUtils repositoryUtils;
+
+    public List<HospitalDepartmentEntity> getDepartmentsInHospital(Integer hospitalID) {
+        String statementString = "Select * from hospitaldepartments where hospitalId=?";
+        return jdbcTemplate.query(statementString,  BeanPropertyRowMapper.newInstance(HospitalDepartmentEntity.class), hospitalID);
+    }
 
     public HospitalDepartmentEntity createHospitalDepartment(HospitalDepartmentEntity department) {
         var id = repositoryUtils.getNextval("hospitaldepartment_id_seq");

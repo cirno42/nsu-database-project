@@ -3,6 +3,7 @@ package ru.nsu.nikolotov.dbproject.backend.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.nsu.nikolotov.dbproject.backend.entities.ServiceStaffEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.ServiceStaffInfoEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.ServiceStaffTypeStatistic;
 import ru.nsu.nikolotov.dbproject.backend.repositories.ServiceStaffInfoRepository;
@@ -14,6 +15,8 @@ import java.util.List;
 public class ServiceStaffInfoService {
     @Autowired
     private ServiceStaffInfoRepository repository;
+
+    public List<ServiceStaffEntity> getAll() {return repository.getAll();}
 
     public List<ServiceStaffInfoEntity> getServiceStaffWorkingAtSuchInstitution
             (Integer institutionId, String workerType, MedicineInstitutionType institutionType) {

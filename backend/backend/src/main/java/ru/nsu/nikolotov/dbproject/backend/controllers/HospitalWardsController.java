@@ -36,7 +36,10 @@ public class HospitalWardsController {
         return ResponseEntity.ok(entity);
     }
 
-
+    @GetMapping("indepartment")
+    public List<HospitalWardEntity> getWardsInDepartment(@RequestParam Integer departmentId) {
+        return service.getWardsInDepartment(departmentId);
+    }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HospitalWardEntity> createWard(@RequestBody HospitalWardEntity entity) {

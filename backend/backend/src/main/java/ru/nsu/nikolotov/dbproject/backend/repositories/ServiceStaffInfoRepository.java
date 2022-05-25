@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.nsu.nikolotov.dbproject.backend.entities.DoctorEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.DoctorWorksAtInstitutionEntity;
+import ru.nsu.nikolotov.dbproject.backend.entities.ServiceStaffEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.ServiceStaffInfoEntity;
 import ru.nsu.nikolotov.dbproject.backend.types.MedicineInstitutionType;
 
@@ -16,6 +18,13 @@ public class ServiceStaffInfoRepository {
     JdbcTemplate jdbcTemplate;
     @Autowired
     RepositoryUtils repositoryUtils;
+
+
+    public List<ServiceStaffEntity> getAll() {
+        String statementString = "Select * from servicestaff;";
+        return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(ServiceStaffEntity.class));
+
+    }
 
     public List<ServiceStaffInfoEntity> getServiceStaffWorkingAtSuchInstitution
             (Integer institutionId, String workerType, MedicineInstitutionType institutionType) {

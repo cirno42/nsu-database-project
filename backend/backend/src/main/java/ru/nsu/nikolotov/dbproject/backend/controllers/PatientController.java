@@ -17,6 +17,11 @@ public class PatientController {
     @Autowired
     PatientService patientService;
 
+    @GetMapping(path = "getall")
+    public List<PatientEntity> getAll() {
+        return patientService.getAll();
+    }
+
     @GetMapping (path = "next")
     public ResponseEntity<PatientEntity> getNextPatientById(@RequestParam int id) {
         return ResponseEntity.ok(patientService.getNextPatientById(id));

@@ -17,6 +17,10 @@ public class HospitalWardService {
     @Autowired
     HospitalWardRepository repository;
 
+    public List<HospitalWardEntity> getWardsInDepartment(Integer departmentID) {
+        return repository.getWardsInDepartment(departmentID);
+    }
+
     public HospitalWardEntity create(HospitalWardEntity entity) {
         return repository.create(entity);
     }

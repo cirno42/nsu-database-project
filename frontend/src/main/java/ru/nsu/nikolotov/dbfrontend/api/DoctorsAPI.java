@@ -3,10 +3,7 @@ package ru.nsu.nikolotov.dbfrontend.api;
 import kong.unirest.GenericType;
 import kong.unirest.Unirest;
 import ru.nsu.nikolotov.dbfrontend.dtos.DoctorDTO;
-import ru.nsu.nikolotov.dbfrontend.entities.DoctorEntity;
-import ru.nsu.nikolotov.dbfrontend.entities.DoctorStatisticEntity;
-import ru.nsu.nikolotov.dbfrontend.entities.DoctorTypeStatisticEntity;
-import ru.nsu.nikolotov.dbfrontend.entities.DoctorWorksAtInstitutionEntity;
+import ru.nsu.nikolotov.dbfrontend.entities.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,4 +48,46 @@ public class DoctorsAPI {
                 .asObject(DoctorTypeStatisticEntity.class).getBody();
     }
 
+    public static List<DoctorExperienceEntity> getDoctorsWithSuchExperience(String doctorType, String instType, Integer instId, Integer experience) {
+        return Unirest.get(ENDPOINT + "/doctorworks/experinced").
+                queryString("instId", instId).
+                queryString("doctorType", doctorType).
+                queryString("institutionType", instType)
+                .queryString("experience", experience)
+                .asObject(new GenericType<List<DoctorExperienceEntity>>(){}).getBody();
+    }
+
+
+    public static DoctorTypeStatisticEntity getCountDoctorsWithSuchExperience(String doctorType, String instType, Integer instId, Integer experience) {
+        return Unirest.get(ENDPOINT + "/doctorworks/experinced/count").
+                queryString("instId", instId).
+                queryString("doctorType", doctorType).
+                queryString("institutionType", instType)
+                .queryString("experience", experience)
+                .asObject(DoctorTypeStatisticEntity.class).getBody();
+    }
+
+    public static List<DoctorEntity> getDoctorsWithSuchRankAndPosition(String doctorType, String instType, Integer instId, String rank, String position) {
+        var dtos =  Unirest.get(ENDPOINT + "/doctorranks").
+                queryString("instId", instId).
+                queryString("doctorType", doctorType).
+                queryString("institutionType", instType)
+                .queryString("rank", rank)
+                .queryString("position", position)
+                .asObject(new GenericType<List<DoctorDTO>>(){}).getBody();
+        List<DoctorEntity> entities = new ArrayList<>(dtos.size());
+        dtos.forEach(el -> entities.add(DoctorDTO.DTOToEntity(el)));
+        return entities;
+    }
+
+
+    public static DoctorTypeStatisticEntity getCountOfDoctorsWithSuchRankAndPosition(String doctorType, String instType, Integer instId, String rank, String position) {
+        return Unirest.get(ENDPOINT + "/doctorranks/count").
+                queryString("instId", instId).
+                queryString("doctorType", doctorType).
+                queryString("institutionType", instType)
+                .queryString("rank", rank)
+                .queryString("position", position)
+                .asObject(DoctorTypeStatisticEntity.class).getBody();
+    }
 }
