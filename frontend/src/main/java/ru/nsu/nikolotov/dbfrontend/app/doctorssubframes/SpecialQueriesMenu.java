@@ -4,6 +4,7 @@ import ru.nsu.nikolotov.dbfrontend.api.DoctorsAPI;
 import ru.nsu.nikolotov.dbfrontend.api.HospitalAPI;
 import ru.nsu.nikolotov.dbfrontend.api.PolyclinicAPI;
 import ru.nsu.nikolotov.dbfrontend.app.utilframes.TableFrame;
+import ru.nsu.nikolotov.dbfrontend.entities.DoctorStatisticEntity;
 import ru.nsu.nikolotov.dbfrontend.entities.DoctorTypeStatisticEntity;
 import ru.nsu.nikolotov.dbfrontend.entities.DoctorWorksAtInstitutionEntity;
 import ru.nsu.nikolotov.dbfrontend.entities.EntityForInsertIntoJTable;
@@ -58,6 +59,7 @@ public class SpecialQueriesMenu {
     private void addActionListeners() {
         backButton.addActionListener(l -> frame.dispose());
         doctorsWorksButton.addActionListener(l -> doctorWorksButtonAction());
+        doctorsWithSuchCountOfOperationsButton.addActionListener(l -> doctorsWithSuchCountOfOperationsButtonAction());
     }
 
     private void doctorWorksButtonAction() {
@@ -149,5 +151,93 @@ public class SpecialQueriesMenu {
         tf.callFrame();
     }
 
+    private void doctorsWithSuchCountOfOperationsButtonAction() {
+        JFrame queryFrame = new JFrame("Set parameters");
+        JButton getButton = new JButton("Get");
+        JButton backButton = new JButton("Back");
+        JCheckBox checkBox = new JCheckBox("Count");
+
+        JTextField operationsCountTextField = new JTextField("operations count");
+
+        queryFrame.setSize(500, 500);
+        queryFrame.setLayout(new VerticalLayout());
+        List<Integer> instIndexes = new ArrayList<>();
+        JComboBox<String> medicineInstitutions = new JComboBox<>();
+        JComboBox<String> medicineInstitutionTypeCombobox = new JComboBox<>(new String[] {
+                MedicineInstitutionType.HOSPITAL.toString(),
+                MedicineInstitutionType.POLYCLINIC.toString(),
+                MedicineInstitutionType.ALL.toString()});
+        JComboBox<String> doctorTypeCombobox = new JComboBox<>(new String [] {DoctorType.SURGEON.toString(), DoctorType.DENTIST.toString()});
+        medicineInstitutionTypeCombobox.addActionListener(l -> {
+            medicineInstitutions.removeAllItems();
+            var type = MedicineInstitutionType.fromString(medicineInstitutionTypeCombobox.getItemAt(medicineInstitutionTypeCombobox.getSelectedIndex()));
+            switch (type) {
+                case HOSPITAL -> {
+                    var hospitals = HospitalAPI.getAll();
+                    hospitals.forEach(el -> {
+                        medicineInstitutions.addItem(el.toString());
+                        instIndexes.add(el.getId());
+                    });
+                }
+                case POLYCLINIC -> {
+                    var polyclinics = PolyclinicAPI.getAll();
+                    polyclinics.forEach(el -> {
+                        medicineInstitutions.addItem(el.toString());
+                        instIndexes.add(el.getId());
+                    });
+                }
+
+            }
+        });
+
+        backButton.addActionListener(l -> queryFrame.dispose());
+
+        getButton.addActionListener(l -> {
+
+            int operationsCount = Integer.parseInt(operationsCountTextField.getText());
+            if (operationsCount == 0) {
+                JOptionPane.showMessageDialog(null, "Wrong operations count!");
+            }
+            Integer id = 0;
+            if (MedicineInstitutionType.fromString(medicineInstitutionTypeCombobox.getItemAt(medicineInstitutionTypeCombobox.getSelectedIndex()))
+                    != MedicineInstitutionType.ALL) {
+                id = instIndexes.get(medicineInstitutions.getSelectedIndex());
+            }
+
+            Integer finalId = id;
+            if (!checkBox.isSelected()) {
+                var doctors = DoctorsAPI.getDoctorsWhoMadeSuchCountOfOperations(
+                        doctorTypeCombobox.getItemAt(doctorTypeCombobox.getSelectedIndex()),
+                        medicineInstitutionTypeCombobox.getItemAt(medicineInstitutionTypeCombobox.getSelectedIndex()),
+                        finalId, operationsCount);
+                showFrameWIthDoctorWorks(doctors);
+            } else {
+                var doctorsCount = DoctorsAPI.getCountOfDoctorsWhoMadeSuchCountOfOperations(doctorTypeCombobox.getItemAt(doctorTypeCombobox.getSelectedIndex()),
+                        medicineInstitutionTypeCombobox.getItemAt(medicineInstitutionTypeCombobox.getSelectedIndex()),
+                        finalId, operationsCount);
+                List<DoctorTypeStatisticEntity> list = new ArrayList<>(1);
+                list.add(doctorsCount);
+                showFrameWIthDoctorWorks(list);
+            }
+
+        });
+
+        medicineInstitutions.setPreferredSize(new Dimension(300, 50));
+        medicineInstitutionTypeCombobox.setPreferredSize(new Dimension(300, 50));
+        doctorTypeCombobox.setPreferredSize(new Dimension(300, 50));
+        getButton.setPreferredSize(new Dimension(100, 50));
+        backButton.setPreferredSize(new Dimension(100, 50));
+        checkBox.setPreferredSize(new Dimension(100, 50));
+        operationsCountTextField.setPreferredSize(new Dimension(200, 25));
+        queryFrame.add(doctorTypeCombobox);
+        queryFrame.add(medicineInstitutionTypeCombobox);
+        queryFrame.add(medicineInstitutions);
+        queryFrame.add(operationsCountTextField);
+        queryFrame.add(checkBox);
+        queryFrame.add(getButton);
+        queryFrame.add(backButton);
+
+        queryFrame.setVisible(true);
+    }
 
 }

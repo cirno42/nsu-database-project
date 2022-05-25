@@ -12,11 +12,11 @@ public class DoctorStatisticEntity implements EntityForInsertIntoJTable{
 
     @Override
     public String[] getHeaders() {
-        return new String[0];
+        return new String[] {"id", "name", "count"};
     }
 
     @Override
     public String[] getValues() {
-        return new String[0];
+        return new String[] {id.toString(), name, count.toString()};
     }
 }

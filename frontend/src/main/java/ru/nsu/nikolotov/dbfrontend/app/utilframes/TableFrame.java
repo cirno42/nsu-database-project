@@ -20,7 +20,7 @@ public class TableFrame {
     public TableFrame(List<? extends EntityForInsertIntoJTable> data) {
 
         backButton.addActionListener(l -> frame.dispose());
-        frame.setSize(1000, 500);
+        frame.setSize(1000, 600);
         frame.setLayout(new VerticalLayout());
 
         DefaultTableModel tableModel = new DefaultTableModel();
