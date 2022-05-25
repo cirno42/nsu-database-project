@@ -6,6 +6,8 @@ import ru.nsu.nikolotov.dbproject.backend.entities.DoctorStatisticEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.PolyclinicEntity;
 import ru.nsu.nikolotov.dbproject.backend.repositories.PolyclinicRepository;
 
+import java.util.List;
+
 @Service
 public class PolyclinicService {
     @Autowired
@@ -34,4 +36,6 @@ public class PolyclinicService {
     public DoctorStatisticEntity getPolyclinicCabinetsCount(Integer polyclinicId) {
         return repository.getPolyclinicCabinetsCount(polyclinicId);
     }
+
+    public List<PolyclinicEntity> getAll() {return repository.getAll();}
 }

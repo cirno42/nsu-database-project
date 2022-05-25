@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalEntity;
 import ru.nsu.nikolotov.dbproject.backend.services.HospitalService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/hospitals")
 public class HospitalController {
@@ -30,6 +32,11 @@ public class HospitalController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(entity);
+    }
+
+    @GetMapping(path = "getall")
+    public List<HospitalEntity> getAllHospitals() {
+        return hospitalService.getAll();
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)

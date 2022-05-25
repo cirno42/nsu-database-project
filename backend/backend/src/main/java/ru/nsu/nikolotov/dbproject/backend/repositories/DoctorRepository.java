@@ -59,6 +59,11 @@ public class DoctorRepository {
         return getById(nextId);
     }
 
+    public List<DoctorEntity> getAll() {
+        String statementString = "Select * from doctors;";
+        return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(DoctorEntity.class));
+    }
+
     public void delete(int id)  {
 
     }
@@ -100,9 +105,20 @@ public class DoctorRepository {
         if (rank == DoctorScienceRank.NONE) {
             return;
         }
-        String tableName = DoctorScienceRank.doctorRankToTableName(rank);
-        String statementString = "Insert into " + tableName + "(id) values(?)";
-        jdbcTemplate.update(statementString, id);
+        if (rank == DoctorScienceRank.CANDIDATE_OF_SCIENCE) {
+            String tableName = DoctorScienceRank.doctorRankToTableName(rank);
+            String statementString = "Insert into " + tableName + "(id) values(?)";
+            jdbcTemplate.update(statementString, id);
+        } else if (rank == DoctorScienceRank.DOCTOR_OF_SCIENCE) {
+            String tableName = DoctorScienceRank.doctorRankToTableName(DoctorScienceRank.CANDIDATE_OF_SCIENCE);
+            String statementString = "Insert into " + tableName + "(id) values(?)";
+            jdbcTemplate.update(statementString, id);
+
+            tableName = DoctorScienceRank.doctorRankToTableName(rank);
+            statementString = "Insert into " + tableName + "(id) values(?)";
+            jdbcTemplate.update(statementString, id);
+        }
+
     }
 
     public void insertIntoDoctorsWhoCanDoOperations(int id) {

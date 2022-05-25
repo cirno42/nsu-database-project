@@ -67,7 +67,7 @@ public class ServiceStaffInfoRepository {
                         "     where (ServiceStaffPositions.positionName = ?)) as positions\n" +
                         "        inner join ServiceStaffWorksAtPolyclinic on (ServiceStaffWorksAtPolyclinic.positionId = positions.positionId)\n" +
                         "        inner join Polyclinics on (ServiceStaffWorksAtPolyclinic.polyclinicId = Polyclinics.id)\n" +
-                        "        inner join ServiceStaff on (ServiceStaff.id = ServiceStaffWorksAtPolyclinic.workerId)\n" +
+                        "        inner join ServiceStaff on (ServiceStaff.id = ServiceStaffWorksAtPolyclinic.workerId) where ServiceStaffWorksAtPolyclinic.dismissalDate is null\n" +
                         "UNION\n" +
                         "Select Hospitals.id as institutionId, Hospitals.name as institutionName, ServiceStaff.name as workerName, positions.positionName as position, positions.salaryCoefficient as salaryCoefficient,\n" +
                         "       ServiceStaffWorksAtHospital.salary, ServiceStaffWorksAtHospital.employmentDate, ServiceStaffWorksAtHospital.dismissalDate\n" +

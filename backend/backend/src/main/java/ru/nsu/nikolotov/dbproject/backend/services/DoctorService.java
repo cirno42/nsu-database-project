@@ -112,5 +112,8 @@ public class DoctorService {
         return true;
     }
 
+    public List<DoctorEntity> getAll() {
+        return repository.getAll();
+    }
 
 }

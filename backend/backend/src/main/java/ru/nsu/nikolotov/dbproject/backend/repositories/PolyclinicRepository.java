@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.nikolotov.dbproject.backend.entities.DoctorStatisticEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.PolyclinicEntity;
 
+import java.util.List;
+
 @Repository
 @Transactional
 public class PolyclinicRepository {
@@ -31,13 +33,20 @@ public class PolyclinicRepository {
         return createdEntity.get(0);
     }
 
+    public List<PolyclinicEntity> getAll() {
+        String statementToSelectNewEntity = "Select * from polyclinics";
+        var createdEntity = jdbcTemplate.query(statementToSelectNewEntity,
+                BeanPropertyRowMapper.newInstance(PolyclinicEntity.class));
+        return createdEntity;
+    }
+
     public PolyclinicEntity getNext(int id) {
         var nextId = repositoryUtils.getNextId("Polyclinics", id);
         return getById(nextId);
     }
 
     public int update(PolyclinicEntity entity) {
-        String statementString = "Update polyclinics set name " +
+        String statementString = "Update polyclinics set name=? " +
                 "where id=?";
         return jdbcTemplate.update(statementString, entity.getName(), entity.getId());
     }

@@ -9,6 +9,8 @@ import ru.nsu.nikolotov.dbproject.backend.entities.DoctorStatisticEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.PolyclinicEntity;
 import ru.nsu.nikolotov.dbproject.backend.services.PolyclinicService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/polyclinics")
 public class PolyclinicController {
@@ -22,6 +24,11 @@ public class PolyclinicController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(entity);
+    }
+
+    @GetMapping(path = "getall")
+    public List<PolyclinicEntity> getAll() {
+        return service.getAll();
     }
 
     @GetMapping(path = "next")

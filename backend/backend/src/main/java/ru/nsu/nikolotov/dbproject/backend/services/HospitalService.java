@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalEntity;
 import ru.nsu.nikolotov.dbproject.backend.repositories.HospitalRepository;
 
+import java.util.List;
+
 @Service
 public class HospitalService {
     @Autowired
@@ -29,4 +31,6 @@ public class HospitalService {
     public HospitalEntity getHospitalById(int id) {
         return hospitalRepository.getHospitalById(id);
     }
+
+    public List<HospitalEntity> getAll() {return hospitalRepository.getAll();}
 }

@@ -47,7 +47,7 @@ public class DoctorsController {
         return service.getListOfDoctorsWorkingInInstitutionWithSuchType(instId, doctorT, medicineInstitutionType);
     }
 
-    @GetMapping(path = "doctorworks/info/count")
+    @GetMapping(path = "doctorworks/info/count", produces = MediaType.APPLICATION_JSON_VALUE)
     public DoctorTypeStatisticEntity getCountOfDoctorsWorkingInHospitalWithSuchType
             (@RequestParam(required = false) Integer instId, @RequestParam String doctorType, @RequestParam String institutionType) {
         DoctorType doctorT= DoctorType.fromString(doctorType);
@@ -180,6 +180,14 @@ public class DoctorsController {
             return null;
         }
         return service.getHospitalStats(doctorId, hospitalId, DoctorType.fromString(doctorType));
+    }
+
+    @GetMapping("getall")
+    public List<DoctorDTO> getAllDoctors() {
+        var entities = service.getAll();
+        List<DoctorDTO> dtos = new ArrayList<>(entities.size());
+        entities.forEach(entity -> dtos.add(DoctorDTO.EntityToDTO(entity)));
+        return dtos;
     }
 
 }

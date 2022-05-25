@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalEntity;
 
+import java.util.List;
+
 @Transactional
 @Repository
 public class HospitalRepository {
@@ -46,6 +48,12 @@ public class HospitalRepository {
 
     public HospitalEntity getHospitalById(int id) {
         return repositoryUtils.getEntityId("Hospitals", id, HospitalEntity.class);
+    }
+
+    public List<HospitalEntity> getAll() {
+        String statementString = "select * from hospitals";
+        return jdbcTemplate.query(statementString,
+                BeanPropertyRowMapper.newInstance(HospitalEntity.class));
     }
 
 }
