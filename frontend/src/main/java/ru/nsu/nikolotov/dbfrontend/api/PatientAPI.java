@@ -2,10 +2,7 @@ package ru.nsu.nikolotov.dbfrontend.api;
 
 import kong.unirest.GenericType;
 import kong.unirest.Unirest;
-import ru.nsu.nikolotov.dbfrontend.entities.HospitalEntity;
-import ru.nsu.nikolotov.dbfrontend.entities.PatientEntity;
-import ru.nsu.nikolotov.dbfrontend.entities.PatientTreatmentInfo;
-import ru.nsu.nikolotov.dbfrontend.entities.PatientTreatsInPolyclinicEntity;
+import ru.nsu.nikolotov.dbfrontend.entities.*;
 
 import java.util.List;
 
@@ -16,7 +13,7 @@ public class PatientAPI {
         return Unirest.get(ENDPOINT + "/getall").asObject(new GenericType<List<PatientEntity>>(){}).getBody();
     }
 
-    public static List<PatientTreatmentInfo> getPatientsWhoTreatsInSuchPlace(Integer hospitalId, Integer departmentId, Integer wardId) {
+    public static List<DoctorTreatsPatientEntity> getPatientsWhoTreatsInSuchPlace(Integer hospitalId, Integer departmentId, Integer wardId) {
         String depId = "";
         if (departmentId != null) {
             depId = departmentId.toString();
@@ -31,7 +28,7 @@ public class PatientAPI {
                 .queryString("hospitalId", hospitalId)
                 .queryString("departmentId", depId)
                 .queryString("wardId", wId)
-                .asObject(new GenericType<List<PatientTreatmentInfo>>(){})
+                .asObject(new GenericType<List<DoctorTreatsPatientEntity>>(){})
                 .getBody();
     }
 
@@ -58,6 +55,33 @@ public class PatientAPI {
                 .queryString("polyclinicId", polyclinicId)
                 .queryString("doctorType", doctorType)
                 .asObject(new GenericType<List<PatientTreatsInPolyclinicEntity>>(){})
+                .getBody();
+    }
+
+    public static List<DoneOperationsForPatientEntity> getPatientsWhoHadOperationInHospital(Integer hospitalId, String beginDate, String endDate) {
+        return Unirest.get(ENDPOINT + "/operations/hospital")
+                .queryString("hospitalId", hospitalId)
+                .queryString("beginDate", beginDate)
+                .queryString("endDate", endDate)
+                .asObject(new GenericType<List<DoneOperationsForPatientEntity>>(){})
+                .getBody();
+    }
+
+    public static List<DoneOperationsForPatientEntity> getPatientsWhoHadOperationInPolyclinic(Integer polyclinicId, String beginDate, String endDate) {
+        return Unirest.get(ENDPOINT + "/operations/polyclinic")
+                .queryString("polyclinicId", polyclinicId)
+                .queryString("beginDate", beginDate)
+                .queryString("endDate", endDate)
+                .asObject(new GenericType<List<DoneOperationsForPatientEntity>>(){})
+                .getBody();
+    }
+
+    public static List<DoneOperationsForPatientEntity> getPatientsWhoHadOperatedByDoctor(Integer doctorId, String beginDate, String endDate) {
+        return Unirest.get(ENDPOINT + "/operations/doctor")
+                .queryString("doctorId", doctorId)
+                .queryString("beginDate", beginDate)
+                .queryString("endDate", endDate)
+                .asObject(new GenericType<List<DoneOperationsForPatientEntity>>(){})
                 .getBody();
     }
 

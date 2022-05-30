@@ -169,6 +169,17 @@ public class DoctorsController {
                                                                   @RequestParam(required = false) String doctorType,
                                                                   @RequestParam Date beginDate,
                                                                   @RequestParam Date endDate) {
+
+        if ((doctorId != null) && (doctorId < 0)) {
+            doctorId = null;
+        }
+        if ((polyclinicId != null) && (polyclinicId < 0)) {
+            polyclinicId = null;
+        }
+        if (doctorType == null) {
+            doctorType = "";
+        }
+
         return service.getPolyclinicStats(doctorId, beginDate, endDate, polyclinicId, DoctorType.fromString(doctorType));
     }
 
@@ -178,6 +189,15 @@ public class DoctorsController {
                                                         @RequestParam(required = false) String doctorType) {
         if ((doctorId == null) && (hospitalId == null) && (doctorType == null)) {
             return null;
+        }
+        if ((doctorId != null) && (doctorId < 0)) {
+            doctorId = null;
+        }
+        if ((hospitalId != null) && (hospitalId < 0)) {
+            hospitalId = null;
+        }
+        if (doctorType == null) {
+            doctorType = "";
         }
         return service.getHospitalStats(doctorId, hospitalId, DoctorType.fromString(doctorType));
     }

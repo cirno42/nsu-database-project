@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.nsu.nikolotov.dbproject.backend.entities.LaboratoryEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.LaboratoryServiceStatisticEntity;
 import ru.nsu.nikolotov.dbproject.backend.services.LaboratoriesService;
 import ru.nsu.nikolotov.dbproject.backend.types.LaboratoryTypes;
@@ -19,6 +20,17 @@ public class LaboratoriesController {
     @Autowired
     LaboratoriesService service;
 
+    @GetMapping("getall")
+    public List<LaboratoryEntity> getAll() {
+        return service.getAll();
+    }
+
+    @GetMapping("get/withtype")
+    public List<LaboratoryEntity> getLabsWithSuchType(@RequestParam String labType) {
+        var type = LaboratoryTypes.fromString(labType);
+        return service.getLabsWithSuchType(type);
+
+    }
     @GetMapping("services/statistic")
     public List<LaboratoryServiceStatisticEntity> getLabServicesStats(
             @RequestParam Integer labId,

@@ -11,6 +11,11 @@ import java.util.List;
 public class DoctorsAPI {
     private static final String ENDPOINT = "http://localhost:8080/api/v1/doctors";
 
+    public static List<DoctorDTO> getAllDTO() {
+        var doctors = Unirest.get("http://localhost:8080/api/v1/doctors/getall").asObject(new GenericType<List<DoctorDTO>>(){}).getBody();
+        return doctors;
+    }
+
     public static List<DoctorWorksAtInstitutionEntity> getDoctorWorksAtInstitution(String doctorType, String instType, Integer instId) {
         return Unirest.get(ENDPOINT + "/doctorworks/info").
                 queryString("instId", instId).
@@ -89,5 +94,25 @@ public class DoctorsAPI {
                 .queryString("rank", rank)
                 .queryString("position", position)
                 .asObject(DoctorTypeStatisticEntity.class).getBody();
+    }
+
+    public static List<DoctorStatisticEntity> getDoctorHospitalWorkStats(Integer doctorId, Integer hospitalId, String doctorType) {
+        return Unirest.get(ENDPOINT + "/doctorstatistic/hospitals")
+                .queryString("doctorId", doctorId)
+                .queryString("hospitalId", hospitalId)
+                .queryString("doctorType", doctorType)
+                .asObject(new GenericType<List<DoctorStatisticEntity>>(){})
+                .getBody();
+    }
+
+    public static List<DoctorPolyclinicWorkStatistic> getDoctorPolyclinicWorksStats(Integer doctorId, Integer polyclinicId, String doctorType, String beginDate, String endDate) {
+        return Unirest.get(ENDPOINT + "/doctorstatistic/polyclinics")
+                .queryString("doctorId", doctorId)
+                .queryString("polyclinicId", polyclinicId)
+                .queryString("doctorType", doctorType)
+                .queryString("beginDate", beginDate)
+                .queryString("endDate", endDate)
+                .asObject(new GenericType<List<DoctorPolyclinicWorkStatistic>>(){})
+                .getBody();
     }
 }

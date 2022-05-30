@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.nsu.nikolotov.dbproject.backend.entities.PolyclinicCabinetEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.PolyclinicCabinetVisitsCountEntity;
 import ru.nsu.nikolotov.dbproject.backend.services.PolyclinicCabinetService;
 
@@ -23,5 +24,10 @@ public class PolyclinicsCabinetsController {
                                                                       @RequestParam Date beginDate,
                                                                       @RequestParam Date endDate) {
         return service.getVisitStatistic(polyclinicId, beginDate, endDate);
+    }
+
+    @GetMapping("getall")
+    public List<PolyclinicCabinetEntity> getAll() {
+        return service.getAll();
     }
 }

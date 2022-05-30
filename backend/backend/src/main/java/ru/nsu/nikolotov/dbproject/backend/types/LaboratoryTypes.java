@@ -30,7 +30,18 @@ public enum LaboratoryTypes {
         return NONE;
     }
 
-    public static String labTypeToTableName(LaboratoryTypes type, MedicineInstitutionType institutionType) {
+    public static String labTypeToTableName(LaboratoryTypes type) {
+        switch (type) {
+            case BIOLOGICAL:
+                return  "BiologicalLaboratories";
+            case PHYSIOLOGICAL:
+                return "PhysiologicalLaboratories";
+            case BIOCHEMICAL:
+                return "BiochemicalLaboratories";
+        }
+        return null;
+    }
+    public static String labTypeServicesToTableName(LaboratoryTypes type, MedicineInstitutionType institutionType) {
         String subString = "";
         if (institutionType == MedicineInstitutionType.POLYCLINIC) {
             subString = "polyclinic";

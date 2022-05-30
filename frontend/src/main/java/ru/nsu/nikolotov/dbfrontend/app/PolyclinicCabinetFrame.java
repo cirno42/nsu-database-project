@@ -1,30 +1,29 @@
 package ru.nsu.nikolotov.dbfrontend.app;
 
 import ru.nsu.nikolotov.dbfrontend.api.PatientAPI;
-import ru.nsu.nikolotov.dbfrontend.api.ServiceStaffAPI;
+import ru.nsu.nikolotov.dbfrontend.api.PolyclinicCabinetAPI;
 import ru.nsu.nikolotov.dbfrontend.app.patientsubframes.PatientsSpecialQueryMenu;
-import ru.nsu.nikolotov.dbfrontend.app.servicestaffsubframes.SpecialQueriesForServiceStaffMenu;
+import ru.nsu.nikolotov.dbfrontend.app.polycliniccabinetssubframes.SpecialQueriesForPolyclinicCabinetsFrame;
 import ru.nsu.nikolotov.dbfrontend.entities.PatientEntity;
-import ru.nsu.nikolotov.dbfrontend.entities.ServiceStaffEntity;
+import ru.nsu.nikolotov.dbfrontend.entities.PolyclinicCabinetEntity;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PatientsFrame {
+public class PolyclinicCabinetFrame {
     private static final int FRAME_WIDTH = 600;
     private static final int FRAME_HEIGHT = 600;
 
     //private final CreateDoctorFrame createFrame = new CreateDoctorFrame();
 
-    private final JFrame frame = new JFrame("Patients");
+    private final JFrame frame = new JFrame("Polyclinic Cabinets");
 
     private final JTextField idTextField = new JTextField();
-    private final JTextField nameTextField = new JTextField();
-    private final JTextField diseaseHistoryTextField = new JTextField();
-    private final JTextField operationsHistoryTextField = new JTextField();
-    private final JTextField medsHistoryTextField = new JTextField();
+    private final JTextField cabinetNameTextField = new JTextField();
+    private final JTextField polyclinicIdTextField = new JTextField();
+    private final JTextField polyclinicNameTextField = new JTextField();
 
 
     private final JButton createEntityButton = new JButton("Create");
@@ -37,12 +36,12 @@ public class PatientsFrame {
     private final JButton prevEntityButton = new JButton("Prev");
 
     private final JButton selectEntityButton = new JButton("Select...");
-    private List<PatientEntity> patients = new ArrayList<>();
+    private List<PolyclinicCabinetEntity> cabinets = new ArrayList<>();
 
     private  JComboBox<String> gotoCombobox = new JComboBox<>();
     private int listIndex = 0;
 
-    public PatientsFrame() {
+    public PolyclinicCabinetFrame() {
         frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         frame.setLayout(new FlowLayout(FlowLayout.CENTER));
         addActionListeners();
@@ -52,10 +51,9 @@ public class PatientsFrame {
 
     private void addComponents() {
         frame.add(idTextField);
-        frame.add(nameTextField);
-        frame.add(diseaseHistoryTextField);
-        frame.add(operationsHistoryTextField);
-        frame.add(medsHistoryTextField);
+        frame.add(cabinetNameTextField);
+        frame.add(polyclinicIdTextField);
+        frame.add(polyclinicNameTextField);
         frame.add(updateEntityButton);
         frame.add(createEntityButton);
         frame.add(deleteEntityButton);
@@ -67,11 +65,10 @@ public class PatientsFrame {
     }
 
     private void setSizes() {
-        diseaseHistoryTextField.setPreferredSize(new Dimension(500, 25));
-        operationsHistoryTextField.setPreferredSize(new Dimension(500, 25));
-        medsHistoryTextField.setPreferredSize(new Dimension(500, 25));
+        cabinetNameTextField.setPreferredSize(new Dimension(500, 25));
+        polyclinicIdTextField.setPreferredSize(new Dimension(500, 25));
+        polyclinicNameTextField.setPreferredSize(new Dimension(500, 25));
         idTextField.setPreferredSize(new Dimension(500, 25));
-        nameTextField.setPreferredSize(new Dimension(500, 25));
         gotoCombobox.setPreferredSize(new Dimension(400, 25));
         updateEntityButton.setPreferredSize(new Dimension(100, 25));
         createEntityButton.setPreferredSize(new Dimension(100, 25));
@@ -90,12 +87,12 @@ public class PatientsFrame {
         selectEntityButton.addActionListener(l -> selectButtonAction());
     }
 
-    private void getAllPatients() {
-        patients = PatientAPI.getAll();
+    private void getAllCabinets() {
+        cabinets = PolyclinicCabinetAPI.getAll();
     }
 
     private void nextButtonAction() {
-        if (listIndex + 1 < patients.size()) {
+        if (listIndex + 1 < cabinets.size()) {
             listIndex++;
             setTexts();
         }
@@ -108,10 +105,10 @@ public class PatientsFrame {
     }
 
     public void callFrame() {
-        getAllPatients();
-        String[] idAndNames = new String[patients.size()];
-        for (int i = 0; i < patients.size(); i++) {
-            idAndNames[i] = patients.get(i).getId().toString() + " " + patients.get(i).getName();
+        getAllCabinets();
+        String[] idAndNames = new String[cabinets.size()];
+        for (int i = 0; i < cabinets.size(); i++) {
+            idAndNames[i] = cabinets.get(i).getPolyclinicName() + " " + cabinets.get(i).getCabinetName();
             gotoCombobox.addItem(idAndNames[i]);
         }
         setTexts();
@@ -127,27 +124,15 @@ public class PatientsFrame {
 
     private void setTexts() {
 
-        var disH = patients.get(listIndex).getDiseaseHistory();
-        if (disH == null) {
-            disH = "-";
-        }
-        var opH = patients.get(listIndex).getOperationsHistory();
-        if (opH == null) {
-            opH = "-";
-        }
-        var medsH = patients.get(listIndex).getMedsHistory();
-        if (medsH == null) {
-            medsH = "-";
-        }
-        idTextField.setText(String.valueOf(patients.get(listIndex).getId()));
-        nameTextField.setText(patients.get(listIndex).getName());
-        diseaseHistoryTextField.setText(disH);
-        operationsHistoryTextField.setText(opH);
-        medsHistoryTextField.setText(medsH);
+        idTextField.setText(String.valueOf(cabinets.get(listIndex).getCabinetId()));
+        cabinetNameTextField.setText(cabinets.get(listIndex).getCabinetName());
+        polyclinicIdTextField.setText(cabinets.get(listIndex).getPolyclinicId().toString());
+        polyclinicNameTextField.setText(cabinets.get(listIndex).getPolyclinicName());
     }
 
     private void selectButtonAction() {
-        PatientsSpecialQueryMenu menu = new PatientsSpecialQueryMenu();
+        SpecialQueriesForPolyclinicCabinetsFrame menu = new SpecialQueriesForPolyclinicCabinetsFrame();
         menu.callFrame();
     }
+
 }

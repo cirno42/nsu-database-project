@@ -11,9 +11,11 @@ public class HospitalWardsAPI {
     private static final String ENDPOINT = "http://localhost:8080/api/v1/hospitalwards";
 
     public static List<HospitalWardEntity> getWardsInDepartment(Integer departmentId) {
+        System.out.println("Department:" + departmentId);
         return Unirest.get(ENDPOINT + "/indepartment")
                 .queryString("departmentId", departmentId)
                 .asObject(new GenericType<List<HospitalWardEntity>>(){})
                 .getBody();
     }
+
 }

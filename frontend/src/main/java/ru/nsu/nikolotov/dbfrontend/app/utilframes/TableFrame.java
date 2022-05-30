@@ -24,19 +24,24 @@ public class TableFrame {
 
     public TableFrame(List<? extends EntityForInsertIntoJTable> data) {
 
+        if ((data == null) || (data.size() == 0)) {
+            JOptionPane.showMessageDialog(null, "No data with spec. options");
+        }
+
         backButton.addActionListener(l -> frame.dispose());
         frame.setSize(1000, 600);
         frame.setLayout(new VerticalLayout());
-
-        DefaultTableModel tableModel = new DefaultTableModel();
-        tableModel.setColumnIdentifiers(data.get(0).getHeaders());
-        for (EntityForInsertIntoJTable entity : data) {
-            tableModel.addRow(entity.getValues());
+        if ((data != null) && (data.size() != 0)) {
+            DefaultTableModel tableModel = new DefaultTableModel();
+            tableModel.setColumnIdentifiers(data.get(0).getHeaders());
+            for (EntityForInsertIntoJTable entity : data) {
+                tableModel.addRow(entity.getValues());
+            }
+            JTable table = new JTable(tableModel);
+            JScrollPane scrollPane = new JScrollPane(table);
+            scrollPane.setPreferredSize(new Dimension(950, 500));
+            frame.add(scrollPane);
         }
-        JTable table = new JTable(tableModel);
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setPreferredSize(new Dimension(950, 500));
-        frame.add(scrollPane);
         frame.add(backButton);
         frame.setVisible(true);
     }

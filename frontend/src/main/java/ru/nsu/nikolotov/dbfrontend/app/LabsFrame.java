@@ -1,31 +1,26 @@
 package ru.nsu.nikolotov.dbfrontend.app;
 
+import ru.nsu.nikolotov.dbfrontend.api.LabsAPI;
 import ru.nsu.nikolotov.dbfrontend.api.PatientAPI;
-import ru.nsu.nikolotov.dbfrontend.api.ServiceStaffAPI;
+import ru.nsu.nikolotov.dbfrontend.app.labssubframe.SpecialQueriesForLabsMenu;
 import ru.nsu.nikolotov.dbfrontend.app.patientsubframes.PatientsSpecialQueryMenu;
-import ru.nsu.nikolotov.dbfrontend.app.servicestaffsubframes.SpecialQueriesForServiceStaffMenu;
+import ru.nsu.nikolotov.dbfrontend.entities.LaboratoryEntity;
 import ru.nsu.nikolotov.dbfrontend.entities.PatientEntity;
-import ru.nsu.nikolotov.dbfrontend.entities.ServiceStaffEntity;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PatientsFrame {
+public class LabsFrame {
     private static final int FRAME_WIDTH = 600;
     private static final int FRAME_HEIGHT = 600;
 
-    //private final CreateDoctorFrame createFrame = new CreateDoctorFrame();
 
-    private final JFrame frame = new JFrame("Patients");
+    private final JFrame frame = new JFrame("Labs");
 
     private final JTextField idTextField = new JTextField();
     private final JTextField nameTextField = new JTextField();
-    private final JTextField diseaseHistoryTextField = new JTextField();
-    private final JTextField operationsHistoryTextField = new JTextField();
-    private final JTextField medsHistoryTextField = new JTextField();
-
 
     private final JButton createEntityButton = new JButton("Create");
 
@@ -37,12 +32,12 @@ public class PatientsFrame {
     private final JButton prevEntityButton = new JButton("Prev");
 
     private final JButton selectEntityButton = new JButton("Select...");
-    private List<PatientEntity> patients = new ArrayList<>();
+    private List<LaboratoryEntity> labs = new ArrayList<>();
 
     private  JComboBox<String> gotoCombobox = new JComboBox<>();
     private int listIndex = 0;
 
-    public PatientsFrame() {
+    public LabsFrame() {
         frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         frame.setLayout(new FlowLayout(FlowLayout.CENTER));
         addActionListeners();
@@ -53,9 +48,6 @@ public class PatientsFrame {
     private void addComponents() {
         frame.add(idTextField);
         frame.add(nameTextField);
-        frame.add(diseaseHistoryTextField);
-        frame.add(operationsHistoryTextField);
-        frame.add(medsHistoryTextField);
         frame.add(updateEntityButton);
         frame.add(createEntityButton);
         frame.add(deleteEntityButton);
@@ -67,9 +59,6 @@ public class PatientsFrame {
     }
 
     private void setSizes() {
-        diseaseHistoryTextField.setPreferredSize(new Dimension(500, 25));
-        operationsHistoryTextField.setPreferredSize(new Dimension(500, 25));
-        medsHistoryTextField.setPreferredSize(new Dimension(500, 25));
         idTextField.setPreferredSize(new Dimension(500, 25));
         nameTextField.setPreferredSize(new Dimension(500, 25));
         gotoCombobox.setPreferredSize(new Dimension(400, 25));
@@ -90,12 +79,12 @@ public class PatientsFrame {
         selectEntityButton.addActionListener(l -> selectButtonAction());
     }
 
-    private void getAllPatients() {
-        patients = PatientAPI.getAll();
+    private void getAllLabs() {
+        labs = LabsAPI.getAll();
     }
 
     private void nextButtonAction() {
-        if (listIndex + 1 < patients.size()) {
+        if (listIndex + 1 < labs.size()) {
             listIndex++;
             setTexts();
         }
@@ -108,10 +97,10 @@ public class PatientsFrame {
     }
 
     public void callFrame() {
-        getAllPatients();
-        String[] idAndNames = new String[patients.size()];
-        for (int i = 0; i < patients.size(); i++) {
-            idAndNames[i] = patients.get(i).getId().toString() + " " + patients.get(i).getName();
+        getAllLabs();
+        String[] idAndNames = new String[labs.size()];
+        for (int i = 0; i < labs.size(); i++) {
+            idAndNames[i] = labs.get(i).getId().toString() + " " + labs.get(i).getName();
             gotoCombobox.addItem(idAndNames[i]);
         }
         setTexts();
@@ -126,28 +115,13 @@ public class PatientsFrame {
     }
 
     private void setTexts() {
+        idTextField.setText(String.valueOf(labs.get(listIndex).getId()));
+        nameTextField.setText(labs.get(listIndex).getName());
 
-        var disH = patients.get(listIndex).getDiseaseHistory();
-        if (disH == null) {
-            disH = "-";
-        }
-        var opH = patients.get(listIndex).getOperationsHistory();
-        if (opH == null) {
-            opH = "-";
-        }
-        var medsH = patients.get(listIndex).getMedsHistory();
-        if (medsH == null) {
-            medsH = "-";
-        }
-        idTextField.setText(String.valueOf(patients.get(listIndex).getId()));
-        nameTextField.setText(patients.get(listIndex).getName());
-        diseaseHistoryTextField.setText(disH);
-        operationsHistoryTextField.setText(opH);
-        medsHistoryTextField.setText(medsH);
     }
 
     private void selectButtonAction() {
-        PatientsSpecialQueryMenu menu = new PatientsSpecialQueryMenu();
+        SpecialQueriesForLabsMenu menu = new SpecialQueriesForLabsMenu();
         menu.callFrame();
     }
 }

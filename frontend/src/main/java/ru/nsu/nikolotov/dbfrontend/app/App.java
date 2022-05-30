@@ -21,6 +21,10 @@ public class App {
     private final JButton buttonToDoctorsFrame = new JButton("Doctors");
 
     private final JButton buttonToServiceStaffFrame = new JButton("Service staff");
+    private final JButton buttonToPolyclinics = new JButton("Polyclinics");
+    private final JButton buttonToPolyclinicCabinets = new JButton("Polyclinic cabinets");
+
+    private final JButton buttonToLabs = new JButton("Labs");
 
     private final HospitalsFrame hospitalsFrame = new HospitalsFrame();
     private final DoctorsFrame doctorsFrame = new DoctorsFrame();
@@ -53,7 +57,9 @@ public class App {
         frame.add(buttonToPatientsFrame);
         frame.add(buttonToDoctorsFrame);
         frame.add(buttonToServiceStaffFrame);
-
+        frame.add(buttonToPolyclinics);
+        frame.add(buttonToPolyclinicCabinets);
+        frame.add(buttonToLabs);
     }
 
     private void setSizes() {
@@ -61,6 +67,9 @@ public class App {
         buttonToPatientsFrame.setPreferredSize(new Dimension(300, 50));
         buttonToDoctorsFrame.setPreferredSize(new Dimension(300, 50));
         buttonToServiceStaffFrame.setPreferredSize(new Dimension(300, 50));
+        buttonToPolyclinics.setPreferredSize(new Dimension(300, 50));
+        buttonToPolyclinicCabinets.setPreferredSize(new Dimension(300, 50));
+        buttonToLabs.setPreferredSize(new Dimension(300, 50));
     }
 
     private void addActionListeners() {
@@ -73,6 +82,20 @@ public class App {
         buttonToPatientsFrame.addActionListener(l -> {
             PatientsFrame patientsFrame = new PatientsFrame();
             patientsFrame.callFrame();
+        });
+        buttonToPolyclinics.addActionListener(l -> {
+            PolyclinicsFrame polyclinicsFrame = new PolyclinicsFrame();
+            polyclinicsFrame.callFrame();
+        });
+
+        buttonToPolyclinicCabinets.addActionListener(l -> {
+            PolyclinicCabinetFrame polyclinicCabinetFrame = new PolyclinicCabinetFrame();
+            polyclinicCabinetFrame.callFrame();
+        });
+
+        buttonToLabs.addActionListener(l -> {
+            LabsFrame labsFrame = new LabsFrame();
+            labsFrame.callFrame();
         });
     }
 }
