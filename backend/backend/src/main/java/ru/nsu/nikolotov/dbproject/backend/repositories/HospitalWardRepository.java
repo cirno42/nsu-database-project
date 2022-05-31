@@ -6,10 +6,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.nsu.nikolotov.dbproject.backend.entities.DiseaseGroupEntity;
-import ru.nsu.nikolotov.dbproject.backend.entities.HospitalDepartmentEntity;
-import ru.nsu.nikolotov.dbproject.backend.entities.HospitalPlacesStatisticEntity;
-import ru.nsu.nikolotov.dbproject.backend.entities.HospitalWardEntity;
+import ru.nsu.nikolotov.dbproject.backend.entities.*;
 
 import java.util.List;
 
@@ -147,5 +144,11 @@ public class HospitalWardRepository {
                 "group by hospitaldepartments.id;";
 
         return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(HospitalPlacesStatisticEntity.class), id);
+    }
+
+    public List<HospitalWardFullInfoEntity> getAll() {
+        String statementString = "Select hospitalwards.id as id, wardnumber, totalplaces, departmentid, dep.name as departmentName, h.id as hospitalId, h.name as hospitalName\n" +
+                " from hospitalwards inner join hospitaldepartments dep on dep.id = hospitalwards.departmentid inner join hospitals h on h.id = dep.hospitalid;";
+        return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(HospitalWardFullInfoEntity.class));
     }
 }

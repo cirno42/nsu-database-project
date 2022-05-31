@@ -13,7 +13,7 @@ import java.net.URISyntaxException;
 public class App {
     private final JFrame frame = new JFrame("Medicine database");
     private static final int FRAME_WIDTH = 400;
-    private static final int FRAME_HEIGHT = 800;
+    private static final int FRAME_HEIGHT = 1000;
     private final JButton buttonToHospitalsFrame = new JButton("Hospitals");
 
     private final JButton buttonToPatientsFrame = new JButton("Patients");
@@ -25,6 +25,9 @@ public class App {
     private final JButton buttonToPolyclinicCabinets = new JButton("Polyclinic cabinets");
 
     private final JButton buttonToLabs = new JButton("Labs");
+
+    private final JButton buttonToWards = new JButton("Hospital wards");
+    private final JButton buttonToDeps = new JButton("Hospital departments");
 
     private final HospitalsFrame hospitalsFrame = new HospitalsFrame();
     private final DoctorsFrame doctorsFrame = new DoctorsFrame();
@@ -60,6 +63,8 @@ public class App {
         frame.add(buttonToPolyclinics);
         frame.add(buttonToPolyclinicCabinets);
         frame.add(buttonToLabs);
+        frame.add(buttonToWards);
+        frame.add(buttonToDeps);
     }
 
     private void setSizes() {
@@ -70,6 +75,8 @@ public class App {
         buttonToPolyclinics.setPreferredSize(new Dimension(300, 50));
         buttonToPolyclinicCabinets.setPreferredSize(new Dimension(300, 50));
         buttonToLabs.setPreferredSize(new Dimension(300, 50));
+        buttonToWards.setPreferredSize(new Dimension(300, 50));
+        buttonToDeps.setPreferredSize(new Dimension(300, 50));
     }
 
     private void addActionListeners() {
@@ -96,6 +103,15 @@ public class App {
         buttonToLabs.addActionListener(l -> {
             LabsFrame labsFrame = new LabsFrame();
             labsFrame.callFrame();
+        });
+
+        buttonToWards.addActionListener(l -> {
+            HospitalWardsFrame wardsFrame = new HospitalWardsFrame();
+            wardsFrame.callFrame();
+        });
+        buttonToDeps.addActionListener(l -> {
+            HospitalDepartmentsFrame departmentsFrame = new HospitalDepartmentsFrame();
+            departmentsFrame.callFrame();
         });
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.nsu.nikolotov.dbproject.backend.entities.DiseaseGroupEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalPlacesStatisticEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalWardEntity;
+import ru.nsu.nikolotov.dbproject.backend.entities.HospitalWardFullInfoEntity;
 import ru.nsu.nikolotov.dbproject.backend.repositories.DiseaseGroupRepository;
 import ru.nsu.nikolotov.dbproject.backend.repositories.HospitalWardRepository;
 
@@ -71,5 +72,9 @@ public class HospitalWardService {
 
     public List<HospitalPlacesStatisticEntity> getCountOfFreePlacesInDepartment(Integer id) {
         return repository.getCountOfFreePlacesInDepartment(id);
+    }
+
+    public List<HospitalWardFullInfoEntity> getAll() {
+        return repository.getAll();
     }
 }

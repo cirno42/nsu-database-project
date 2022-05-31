@@ -4,6 +4,7 @@ package ru.nsu.nikolotov.dbproject.backend.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalDepartmentEntity;
+import ru.nsu.nikolotov.dbproject.backend.entities.HospitalDepartmentFullInfo;
 import ru.nsu.nikolotov.dbproject.backend.repositories.HospitalDepartmentRepository;
 
 import java.util.List;
@@ -35,6 +36,10 @@ public class HospitalDepartmentService {
 
     public void updateHospitalDepartment(HospitalDepartmentEntity department) {
         departmentRepository.updateHospitalDepartment(department);
+    }
+
+    public List<HospitalDepartmentFullInfo> getAll() {
+        return departmentRepository.getAll();
     }
 
 }

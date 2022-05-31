@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.nsu.nikolotov.dbproject.backend.entities.DiseaseGroupEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalPlacesStatisticEntity;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalWardEntity;
+import ru.nsu.nikolotov.dbproject.backend.entities.HospitalWardFullInfoEntity;
 import ru.nsu.nikolotov.dbproject.backend.services.HospitalWardService;
 
 import java.util.List;
@@ -25,6 +26,12 @@ public class HospitalWardsController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(entity);
+    }
+
+    @GetMapping(path = "getall")
+    public List<HospitalWardFullInfoEntity> getAll() {
+        var all = service.getAll();
+        return all;
     }
 
     @GetMapping(path = "next")

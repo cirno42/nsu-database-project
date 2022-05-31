@@ -14,7 +14,7 @@ import java.awt.*;
 public class SpecialQueriesForLabsMenu {
 
     private static final int FRAME_WIDTH = 500;
-    private static final int FRAME_HEIGHT = 300;
+    private static final int FRAME_HEIGHT = 150;
     private final JFrame menuFrame = new JFrame("Menu");
     private final JButton labsWorkLoadButton = new JButton("... labs workload");
     private final JButton backButton = new JButton("Back");
@@ -23,7 +23,7 @@ public class SpecialQueriesForLabsMenu {
         menuFrame.setLayout(new VerticalLayout());
         labsWorkLoadButton.setPreferredSize(new Dimension(450, 50));
 
-        backButton.setPreferredSize(new Dimension(300, 50));
+        backButton.setPreferredSize(new Dimension(450, 50));
 
         menuFrame.add(labsWorkLoadButton);
         menuFrame.add(backButton);
@@ -83,7 +83,7 @@ public class SpecialQueriesForLabsMenu {
         getButton.addActionListener(l -> {
             Integer instId = null;
             if (instsCombobox.getSelectedIndex() != 0) {
-                instId = instTypeCombobox.getSelectedIndex()-1;
+                instId = instsCombobox.getSelectedIndex();
             }
             var labs = LabsAPI.getLabsWithSuchType(labTypeCombobox.getItemAt(labTypeCombobox.getSelectedIndex()));
             Integer labId = labs.get(labsCombobox.getSelectedIndex()).getId();
@@ -108,6 +108,8 @@ public class SpecialQueriesForLabsMenu {
         getButton.setPreferredSize(new Dimension(100, 50));
         backButton.setPreferredSize(new Dimension(100, 50));
 
+
+        backButton.addActionListener(l -> queryFrame.dispose());
         queryFrame.add(instTypeCombobox);
         queryFrame.add(instsCombobox);
         queryFrame.add(labTypeCombobox);

@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalDepartmentEntity;
+import ru.nsu.nikolotov.dbproject.backend.entities.HospitalDepartmentFullInfo;
 import ru.nsu.nikolotov.dbproject.backend.services.HospitalDepartmentService;
 
 import java.util.List;
@@ -37,6 +38,11 @@ public class HospitalDepartmentController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(entity);
+    }
+
+    @GetMapping(path = "getall")
+    public List<HospitalDepartmentFullInfo> getAll() {
+        return service.getAll();
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)

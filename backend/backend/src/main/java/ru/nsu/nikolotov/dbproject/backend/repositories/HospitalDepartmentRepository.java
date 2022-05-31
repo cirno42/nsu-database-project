@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalDepartmentEntity;
+import ru.nsu.nikolotov.dbproject.backend.entities.HospitalDepartmentFullInfo;
 import ru.nsu.nikolotov.dbproject.backend.entities.HospitalEntity;
 
 import java.util.List;
@@ -56,6 +57,15 @@ public class HospitalDepartmentRepository {
 
     public HospitalDepartmentEntity getHospitalDepById(int id) {
         return repositoryUtils.getEntityId("hospitaldepartments", id, HospitalDepartmentEntity.class);
+    }
+
+    public List<HospitalDepartmentFullInfo> getAll() {
+        String statementString = "Select hospitaldepartments.id as id, hospitaldepartments.name as name, diseasegroupspecializationid as diseaseGroupSpecializationId,\n" +
+                "d.name as diseaseGroupSpecializationName, h.id as hospitalId, h.name as hospitalName\n" +
+                "from hospitaldepartments inner join diseasesgroups d on d.id = hospitaldepartments.diseasegroupspecializationid\n" +
+                "inner join hospitals h on h.id = hospitaldepartments.hospitalid;";
+
+        return jdbcTemplate.query(statementString,  BeanPropertyRowMapper.newInstance(HospitalDepartmentFullInfo.class));
     }
 
 }
