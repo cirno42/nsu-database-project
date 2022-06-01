@@ -2,6 +2,7 @@ package ru.nsu.nikolotov.dbfrontend.api;
 
 import kong.unirest.GenericType;
 import kong.unirest.Unirest;
+import ru.nsu.nikolotov.dbfrontend.dtos.CreatePatientTreatsAtHospitalDTO;
 import ru.nsu.nikolotov.dbfrontend.entities.*;
 
 import java.util.List;
@@ -85,5 +86,49 @@ public class PatientAPI {
                 .getBody();
     }
 
+    public static List<PatientTreatsInHospitalFullInfoEntity> getPatientsWhoTreatsInHospital() {
+        return Unirest.get(ENDPOINT + "/patienttreatsathospital/getall")
+                .asObject(new GenericType<List<PatientTreatsInHospitalFullInfoEntity>>(){})
+                .getBody();
+    }
 
+    public static List<PatientTreatsInHospitalFullInfoEntity> getPatientsWhoTreatedInHospital() {
+        return Unirest.get(ENDPOINT + "/patienttreatedathospital/history")
+                .asObject(new GenericType<List<PatientTreatsInHospitalFullInfoEntity>>(){})
+                .getBody();
+    }
+
+
+    public static List<PatientTreatsInPolyclinicEntity> getPatientsWhoTreatedInPolyclinic() {
+        return Unirest.get(ENDPOINT + "/patienttreatedatpolyclinic/history")
+                .asObject(new GenericType<List<PatientTreatsInPolyclinicEntity>>(){})
+                .getBody();
+    }
+
+
+    public static List<PatientTreatsInPolyclinicEntity> getPatientsWhoTreatsInPolyclinic() {
+        return Unirest.get(ENDPOINT + "/patienttreatsatpolyclinic/getall")
+                .asObject(new GenericType<List<PatientTreatsInPolyclinicEntity>>(){})
+                .getBody();
+    }
+
+    public static void addNewPatientToHospital(CreatePatientTreatsAtHospitalDTO dto) {
+        Unirest.post(ENDPOINT + "/patienttreatsathospital/create")
+                .header("Content-Type", "application/json")
+                .body(dto)
+                .asObject(CreatePatientTreatsAtHospitalDTO.class)
+                .getBody();
+    }
+
+    public static void finishPatientTreatmentInPolyclinic(Integer id) {
+        Unirest.delete(ENDPOINT + "/finish/polyclinic")
+                .queryString("id", id)
+                .asEmpty();
+    }
+
+    public static void finishPatientTreatmentInHospital(Integer id) {
+        Unirest.delete(ENDPOINT + "/finish/hospital")
+                .queryString("id", id)
+                .asEmpty();
+    }
 }

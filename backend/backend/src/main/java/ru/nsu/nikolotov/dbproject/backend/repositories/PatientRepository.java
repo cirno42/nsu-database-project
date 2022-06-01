@@ -7,8 +7,10 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import ru.nsu.nikolotov.dbproject.backend.dtos.CreatePatientTreatsAtHospitalDTO;
 import ru.nsu.nikolotov.dbproject.backend.entities.*;
 import ru.nsu.nikolotov.dbproject.backend.types.DoctorType;
+import ru.nsu.nikolotov.dbproject.backend.utils.DataConverter;
 
 import java.sql.Types;
 import java.util.Date;
@@ -21,7 +23,8 @@ public class PatientRepository {
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private RepositoryUtils repositoryUtils;
-
+    @Autowired
+    private PatientTreatsAtHospitalRepository patientTreatsAtHospitalRepository;
 
     public List<PatientEntity> getAll() {
         String statementString = "select * from patients";
@@ -110,6 +113,42 @@ public class PatientRepository {
         return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(PatientTreatsInPolyclinicEntity.class), polyclinicId);
     }
 
+    public List<PatientTreatsInPolyclinicEntity> getPatientsTreatsInPolyclinic() {
+        String statementString = "Select Patients.id as patientId, Patients.name as patientName, Doctors.id as doctorId,Doctors.name as doctorName, currentDisease,\n" +
+                "PatientTreatsInPolyclinic.currentmeds,\n" +
+                "patienttreatsinpolyclinic.currentoperation,\n" +
+                "patienttreatsinpolyclinic.admissiondate,\n" +
+                "patienttreatsinpolyclinic.dateofrecovery\n" +
+                "from Patients inner join PatientTreatsInPolyclinic on (Patients.id = PatientTreatsInPolyclinic.patientId)\n" +
+                "inner join Doctors on (Doctors.id = PatientTreatsInPolyclinic.doctorId)\n" +
+                 "inner join doctorworksatpolyclinic on (Doctors.id = doctorworksatpolyclinic.doctorId)";
+        return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(PatientTreatsInPolyclinicEntity.class));
+
+    }
+
+    public List<PatientTreatsInPolyclinicEntity> getPatientsHistory() {
+        String statementString = "Select Patients.id as patientId, Patients.name as patientName, Doctors.id as doctorId,Doctors.name as doctorName, currentDisease,\n" +
+                "PatientTreatedInPolyclinic.currentmeds,\n" +
+                "patienttreatedinpolyclinic.currentoperation,\n" +
+                "patienttreatedinpolyclinic.admissiondate,\n" +
+                "patienttreatedinpolyclinic.dateofrecovery\n" +
+                "from Patients inner join PatientTreatedInPolyclinic on (Patients.id = PatientTreatedInPolyclinic.patientId)\n" +
+                "inner join Doctors on (Doctors.id = PatientTreatedInPolyclinic.doctorId)\n";
+        return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(PatientTreatsInPolyclinicEntity.class));
+
+    }
+
+    public void finishPatientTreatmentInHospital(Integer id) {
+        String statementString = "select * from FinishPatientTreatmentInHospital("+ id + ");";
+        jdbcTemplate.execute(statementString);
+    }
+
+
+    public void finishPatientTreatmentInPolyclinic(Integer id) {
+        String statementString = "select * from finishpatienttreatmentinpolyclinic(" + id + ");";
+        jdbcTemplate.execute(statementString);
+    }
+
     public  List<DoneOperationsForPatientEntity> getPatientWhoHadOperationsInPolyclinic (Date beginDate, Date endDate, Integer polyclinicId) {
         String statementString = "Select Patients.id, Patients.name,\n" +
                 "       doneoperationsforpolyclinics.operationName, doneoperationsforpolyclinics.dateofoperation, doneoperationsforpolyclinics.isresultlethal, doneoperationsforpolyclinics.polyclinicid\n" +
@@ -137,6 +176,17 @@ public class PatientRepository {
                 "where dateofoperation >= ? and dateofoperation <= ? and hospitalid = ?;\n";
         return jdbcTemplate.query(statementString, BeanPropertyRowMapper.newInstance(DoneOperationsForPatientEntity.class), beginDate, endDate, hospitalId);
     }
+
+    public void addNewPatient(CreatePatientTreatsAtHospitalDTO dto) {
+        String statementString = "Insert into patienttreatsinhospital(patientid, doctorid, wardid, admissiondate, dateofrecovery, admissiontemperature, currentdisease, currentoperation, currentmeds) values (?,?,?,?,?,?,?,?,?)";
+        var admD = DataConverter.getDateFromString(dto.getAdmissionDate());
+        var recD = DataConverter.getDateFromString(dto.getDateOfRecovery());
+        jdbcTemplate.update(statementString, dto.getPatientId(), dto.getDoctorId(), dto.getWardId(), admD, recD, dto.getAdmissionTemperature(),
+                dto.getCurrentDisease(), dto.getCurrentOperation(), dto.getCurrentMeds());
+    }
+
+
+
 
     private String getStatementStringForPatientsTreatsInSuchWard() {
         String statementString = "Select Patients.id as patientId, Patients.name as patientName, Doctors.id as doctorid, Doctors.name as doctorName, PatientTreatsInHospital.admissionDate ,PatientTreatsInHospital.admissionTemperature \n" +

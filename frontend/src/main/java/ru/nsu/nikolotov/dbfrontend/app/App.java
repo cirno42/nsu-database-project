@@ -12,7 +12,7 @@ import java.net.URISyntaxException;
 
 public class App {
     private final JFrame frame = new JFrame("Medicine database");
-    private static final int FRAME_WIDTH = 400;
+    private static final int FRAME_WIDTH = 350;
     private static final int FRAME_HEIGHT = 1000;
     private final JButton buttonToHospitalsFrame = new JButton("Hospitals");
 
@@ -28,6 +28,18 @@ public class App {
 
     private final JButton buttonToWards = new JButton("Hospital wards");
     private final JButton buttonToDeps = new JButton("Hospital departments");
+    private final JButton buttonToDoctorWorksHospital = new JButton("Doctor works at hospital");
+
+    private final JButton buttonToDoctorWorksPolyclinic = new JButton("Doctor works at polyclinic");
+    private final JButton buttonToDoctorWorkedHospital = new JButton("Doctor worked at hospital");
+    private final JButton buttonToDoctorWorkedPolyclinic = new JButton("Doctor worked at polyclinic");
+
+
+    private final JButton buttonToPatientTreatsAtHospital = new JButton("Patient treats at hospital");
+    private final JButton buttonToPatientTreatsAtPolyclinic = new JButton("Patient treats at polyclinic");
+    private final JButton buttonToPatientTreatedAtHospital = new JButton("Patient treated at hospital");
+    private final JButton buttonToPatientTreatedAtPolyclinic = new JButton("Patient treated at polyclinic");
+
 
     private final HospitalsFrame hospitalsFrame = new HospitalsFrame();
     private final DoctorsFrame doctorsFrame = new DoctorsFrame();
@@ -65,18 +77,35 @@ public class App {
         frame.add(buttonToLabs);
         frame.add(buttonToWards);
         frame.add(buttonToDeps);
+        frame.add(buttonToDoctorWorksHospital);
+        frame.add(buttonToDoctorWorksPolyclinic);
+        frame.add(buttonToDoctorWorkedHospital);
+        frame.add(buttonToDoctorWorkedPolyclinic);
+        frame.add(buttonToPatientTreatsAtHospital);
+        frame.add(buttonToPatientTreatsAtPolyclinic);
+        frame.add(buttonToPatientTreatedAtHospital);
+        frame.add(buttonToPatientTreatedAtPolyclinic);
     }
 
     private void setSizes() {
-        buttonToHospitalsFrame.setPreferredSize(new Dimension(300, 50));
-        buttonToPatientsFrame.setPreferredSize(new Dimension(300, 50));
-        buttonToDoctorsFrame.setPreferredSize(new Dimension(300, 50));
-        buttonToServiceStaffFrame.setPreferredSize(new Dimension(300, 50));
-        buttonToPolyclinics.setPreferredSize(new Dimension(300, 50));
-        buttonToPolyclinicCabinets.setPreferredSize(new Dimension(300, 50));
-        buttonToLabs.setPreferredSize(new Dimension(300, 50));
-        buttonToWards.setPreferredSize(new Dimension(300, 50));
-        buttonToDeps.setPreferredSize(new Dimension(300, 50));
+        Dimension buttonSize = new Dimension(300, 30);
+        buttonToHospitalsFrame.setPreferredSize(buttonSize);
+        buttonToPatientsFrame.setPreferredSize(buttonSize);
+        buttonToDoctorsFrame.setPreferredSize(buttonSize);
+        buttonToServiceStaffFrame.setPreferredSize(buttonSize);
+        buttonToPolyclinics.setPreferredSize(buttonSize);
+        buttonToPolyclinicCabinets.setPreferredSize(buttonSize);
+        buttonToLabs.setPreferredSize(buttonSize);
+        buttonToWards.setPreferredSize(buttonSize);
+        buttonToDeps.setPreferredSize(buttonSize);
+        buttonToDoctorWorksHospital.setPreferredSize(buttonSize);
+        buttonToDoctorWorksPolyclinic.setPreferredSize(buttonSize);
+        buttonToPatientTreatsAtHospital.setPreferredSize(buttonSize);
+        buttonToPatientTreatsAtPolyclinic.setPreferredSize(buttonSize);
+        buttonToPatientTreatedAtHospital.setPreferredSize(buttonSize);
+        buttonToPatientTreatedAtPolyclinic.setPreferredSize(buttonSize);
+        buttonToDoctorWorkedHospital.setPreferredSize(buttonSize);
+        buttonToDoctorWorkedPolyclinic.setPreferredSize(buttonSize);
     }
 
     private void addActionListeners() {
@@ -112,6 +141,38 @@ public class App {
         buttonToDeps.addActionListener(l -> {
             HospitalDepartmentsFrame departmentsFrame = new HospitalDepartmentsFrame();
             departmentsFrame.callFrame();
+        });
+        buttonToDoctorWorksHospital.addActionListener(l -> {
+            DoctorWorksAtHospitalFrame doctorWorksAtHospitalFrame = new DoctorWorksAtHospitalFrame();
+            doctorWorksAtHospitalFrame.callFrame();
+        });
+        buttonToDoctorWorksPolyclinic.addActionListener(l -> {
+            DoctorWorksAtPolyclinicFrame doctorWorksAtPolyclinicFrame = new DoctorWorksAtPolyclinicFrame();
+            doctorWorksAtPolyclinicFrame.callFrame();
+        });
+        buttonToPatientTreatsAtHospital.addActionListener(l -> {
+            PatientTreatsInHospitalFrame patientTreatsInHospitalFrame = new PatientTreatsInHospitalFrame();
+            patientTreatsInHospitalFrame.callFrame();;
+        });
+        buttonToPatientTreatsAtPolyclinic.addActionListener(l -> {
+            PatientTreatsAtPolyclinicFrame patientTreatsAtPolyclinicFrame = new PatientTreatsAtPolyclinicFrame();
+            patientTreatsAtPolyclinicFrame.callFrame();
+        });
+        buttonToPatientTreatedAtHospital.addActionListener(l -> {
+            PatientTreatedInHospitalFrame f = new PatientTreatedInHospitalFrame();
+            f.callFrame();
+        });
+        buttonToPatientTreatedAtPolyclinic.addActionListener(l -> {
+            PatientTreatedInPolyclinicFrame f = new PatientTreatedInPolyclinicFrame();
+            f.callFrame();
+        });
+        buttonToDoctorWorkedHospital.addActionListener(l -> {
+            DoctorWorkedAtHospitalFrame f = new DoctorWorkedAtHospitalFrame();
+            f.callFrame();
+        });
+        buttonToDoctorWorkedPolyclinic.addActionListener(l -> {
+            DoctorWorkedAtPolyclinicFrame f = new DoctorWorkedAtPolyclinicFrame();
+            f.callFrame();
         });
     }
 }

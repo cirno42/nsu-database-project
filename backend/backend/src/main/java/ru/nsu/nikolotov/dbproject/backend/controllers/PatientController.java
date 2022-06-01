@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.nsu.nikolotov.dbproject.backend.dtos.CreatePatientTreatsAtHospitalDTO;
 import ru.nsu.nikolotov.dbproject.backend.entities.*;
 import ru.nsu.nikolotov.dbproject.backend.services.PatientService;
+import ru.nsu.nikolotov.dbproject.backend.services.PatientTreatsAtHospitalService;
 import ru.nsu.nikolotov.dbproject.backend.types.DoctorType;
 
 import java.util.Date;
@@ -15,7 +17,10 @@ import java.util.List;
 @RequestMapping("api/v1/patients")
 public class PatientController {
     @Autowired
-    PatientService patientService;
+    private PatientService patientService;
+
+    @Autowired
+    private PatientTreatsAtHospitalService patientTreatsAtHospitalService;
 
     @GetMapping(path = "getall")
     public List<PatientEntity> getAll() {
@@ -96,5 +101,41 @@ public class PatientController {
     @GetMapping("operations/doctor")
     public List<DoneOperationsForPatientEntity> getPatientWhoOperatedByDoctor(@RequestParam Date beginDate,@RequestParam Date endDate,@RequestParam Integer doctorId) {
         return patientService.getPatientWhoOperatedByDoctor(beginDate, endDate, doctorId);
+    }
+
+    @GetMapping("patienttreatsathospital/getall")
+    public List<PatientTreatsInHospitalFullInfoEntity> getAllCurrentPatientsInHospital() {
+        return patientTreatsAtHospitalService.getAllCurrentPatients();
+    }
+
+    @GetMapping("patienttreatedathospital/history")
+    public List<PatientTreatsInHospitalFullInfoEntity> getAllHistoryPatientsInHospital() {
+        return patientTreatsAtHospitalService.getHistoryOfPatients();
+    }
+
+
+    @PostMapping(path = "patienttreatsathospital/create", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void addNewPatient(@RequestBody CreatePatientTreatsAtHospitalDTO dto) {
+        patientService.addNewPatient(dto);
+    }
+
+    @GetMapping("patienttreatsatpolyclinic/getall")
+    public List<PatientTreatsInPolyclinicEntity> getAllCurrentPatientsInPolyclinic() {
+        return patientService.getPatientsTreatsInPolyclinic();
+    }
+
+    @GetMapping("patienttreatedatpolyclinic/history")
+    public List<PatientTreatsInPolyclinicEntity> getHistoryInPolyclinic() {
+        return patientService.getPatientsHistory();
+    }
+
+    @DeleteMapping("finish/polyclinic")
+    public void finishPatientTreatmentInPolyclinic(@RequestParam Integer id) {
+        patientService.finishPatientTreatmentInPolyclinic(id);
+    }
+
+    @DeleteMapping("finish/hospital")
+    public void finishPatientTreatmentInHospital(@RequestParam Integer id) {
+        patientService.finishPatientTreatmentInHospital(id);
     }
 }

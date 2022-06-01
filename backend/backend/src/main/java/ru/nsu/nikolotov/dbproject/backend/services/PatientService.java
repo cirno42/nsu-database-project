@@ -4,6 +4,7 @@ package ru.nsu.nikolotov.dbproject.backend.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.nsu.nikolotov.dbproject.backend.dtos.CreatePatientTreatsAtHospitalDTO;
 import ru.nsu.nikolotov.dbproject.backend.entities.*;
 import ru.nsu.nikolotov.dbproject.backend.repositories.PatientRepository;
 import ru.nsu.nikolotov.dbproject.backend.types.DoctorType;
@@ -52,6 +53,10 @@ public class PatientService {
         return patientRepository.getPatientsTreatsInPolyclinic(polyclinicId, doctorType);
     }
 
+    public List<PatientTreatsInPolyclinicEntity> getPatientsTreatsInPolyclinic() {
+        return patientRepository.getPatientsTreatsInPolyclinic();
+    }
+
     public List<DoneOperationsForPatientEntity> getPatientWhoHadOperationsInPolyclinic(Date beginDate, Date endDate, Integer polyclinicId) {
         return patientRepository.getPatientWhoHadOperationsInPolyclinic(beginDate, endDate, polyclinicId);
     }
@@ -63,4 +68,19 @@ public class PatientService {
     }
 
     public List<PatientEntity> getAll() {return patientRepository.getAll();}
+    public void addNewPatient(CreatePatientTreatsAtHospitalDTO dto) {
+        patientRepository.addNewPatient(dto);
+    }
+
+    public List<PatientTreatsInPolyclinicEntity> getPatientsHistory() {
+        return patientRepository.getPatientsHistory();
+    }
+
+    public void finishPatientTreatmentInHospital(Integer id) {
+        patientRepository.finishPatientTreatmentInHospital(id);
+    }
+
+    public void finishPatientTreatmentInPolyclinic(Integer id) {
+        patientRepository.finishPatientTreatmentInPolyclinic(id);
+    }
 }

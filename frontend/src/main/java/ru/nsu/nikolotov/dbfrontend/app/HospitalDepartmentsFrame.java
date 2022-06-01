@@ -1,10 +1,7 @@
 package ru.nsu.nikolotov.dbfrontend.app;
 
 import ru.nsu.nikolotov.dbfrontend.api.HospitalDepartmentsAPI;
-import ru.nsu.nikolotov.dbfrontend.api.HospitalWardsAPI;
-import ru.nsu.nikolotov.dbfrontend.app.wardssubframes.SpecialQueriesForWardsMenu;
 import ru.nsu.nikolotov.dbfrontend.entities.HospitalDepartmentFullInfo;
-import ru.nsu.nikolotov.dbfrontend.entities.HospitalWardFullInfoEntity;
 
 import javax.swing.*;
 import java.awt.*;
